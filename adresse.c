@@ -1,6 +1,6 @@
 #include "adresse.h"
 
-void affiche_ip(ip_addr_t const ip)
+void affiche_ip(ip_addr_t const *ip)
 {
     printf("%d",*ip);
     for (size_t i = 1; i < 4; i++)
@@ -10,7 +10,7 @@ void affiche_ip(ip_addr_t const ip)
     }
 }
 
-void affiche_mac(mac_addr_t const mac)
+void affiche_mac(mac_addr_t const *mac)
 {
     printf("%X",*mac);
     for (size_t i = 1; i < 6; i++)
