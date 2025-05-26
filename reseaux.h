@@ -46,7 +46,7 @@ typedef struct {
 } Graphe;
 
 void afficherTableCommutation(Switch sw,int const taille);
-//void afficherEquipement(Equipement *e,int const index);
+void afficherEquipement(Equipement *e,int const index);
 void afficherGraphe(Graphe g);
 
 
