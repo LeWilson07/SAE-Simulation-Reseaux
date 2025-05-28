@@ -7,13 +7,36 @@ void construireReseau(char const *path, Graphe *g) {
     int nbLiens;
     char bufferLigne[256];
     FILE *f;
-    CHKNULL(f = fopen(path, "r"));
-    CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f));
+    CHKNULL(f = fopen(path, "r")); //Ouverture du fichier
+    CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture de la première ligne
+    //Affectaion du nombre d'équipement et de lien
     CHKSSCANF(sscanf(bufferLigne, "%d %d", &nbEquipement, &nbLiens), 2, \
         "Erreur : Nb de Equipement ou Nb de Lien");
-    printf("%d %d\n", nbEquipement, nbLiens);
-    CHK0(fclose(f));
+    //Vérification de la cohérence des valeurs
+    if(nbEquipement <= 0 || nbLiens <= 0) {
+        printf("Le nombre d'équipements et liens "
+            "ne peut pas être négatif ou nul\n");
+        exit(EXIT_FAILURE);
+    }
+    //Enregistrement des stations
+    g->nb_equipements = nbEquipement;
+    CHKNULL(g->equipements = malloc(nbEquipement * sizeof(*g->equipements)));
+    for (size_t i = 0; i < nbEquipement; i++)
+    {
+        CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
+        ajouterEquipement(bufferLigne,g,i);
+    }
+
+    //Enregistrement des liens
+        
+    CHK0(fclose(f)); //Fermeture du fichier
 } 
+
+void ajouterEquipement(char const *ligne, Graphe *g ,int const index){
+    int type;
+    
+    
+}
 
 void afficherTableCommutation(Switch sw, int taille) {
     //S'occupe de l'affichage d'une table de commutation

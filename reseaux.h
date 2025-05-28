@@ -22,9 +22,10 @@
     }\
 } while(0)
 
-#define CHKSSCANF(op,val,desc) do { \
-    if ((op) != val) { \
+#define CHKSSCANF(op,nbVal,desc) do { \
+    if ((op) != nbVal) { \
         printf("%s\n",desc); \
+        exit(EXIT_FAILURE); \
     } \
 } while(0)
 
@@ -38,7 +39,6 @@ typedef struct{
     mac_addr_t adresse_mac;
 
 }Commutation;
-
 
 typedef struct{
     mac_addr_t mac;
@@ -60,8 +60,6 @@ typedef struct {
     };
 } Equipement;
 
-
-
 typedef struct {
     int nb_equipements;
     Equipement *equipements;
@@ -69,6 +67,7 @@ typedef struct {
 } Graphe;
 
 void construireReseau(char const *path, Graphe *g);
+void ajouterEquipement(char const *ligne, Graphe *g ,int const index);
 void afficherTableCommutation(Switch sw,int const taille);
 void afficherEquipement(Equipement *e,int const index);
 void afficherGraphe(Graphe g);
