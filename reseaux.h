@@ -1,9 +1,32 @@
 #pragma once 
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include  <adresse.h>
+#include "adresse.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <stdlib.h> 
+#include <stdbool.h>
+
+#define CHK0(op) do { \
+    if((op) != 0) { \
+        perror(#op); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define CHKNULL(op) do { \
+    if((op) == NULL) { \
+        perror(#op); \
+        exit(EXIT_FAILURE); \
+    }\
+} while(0)
+
+#define CHKSSCANF(op,val,desc) do { \
+    if ((op) != val) { \
+        printf("%s\n",desc); \
+    } \
+} while(0)
 
 typedef struct {
     mac_addr_t mac;
@@ -45,8 +68,9 @@ typedef struct {
     int** matrice_adjacence;
 } Graphe;
 
+void construireReseau(char const *path, Graphe *g);
 void afficherTableCommutation(Switch sw,int const taille);
-//void afficherEquipement(Equipement *e,int const index);
+void afficherEquipement(Equipement *e,int const index);
 void afficherGraphe(Graphe g);
 
 

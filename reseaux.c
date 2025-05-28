@@ -1,5 +1,19 @@
 #include "reseaux.h"
-#include <stdio.h>
+
+
+
+void construireReseau(char const *path, Graphe *g) {
+    int nbEquipement;
+    int nbLiens;
+    char bufferLigne[256];
+    FILE *f;
+    CHKNULL(f = fopen(path, "r"));
+    CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f));
+    CHKSSCANF(sscanf(bufferLigne, "%d %d", &nbEquipement, &nbLiens), 2, \
+        "Erreur : Nb de Equipement ou Nb de Lien");
+    printf("%d %d\n", nbEquipement, nbLiens);
+    CHK0(fclose(f));
+} 
 
 void afficherTableCommutation(Switch sw, int taille) {
     //S'occupe de l'affichage d'une table de commutation
