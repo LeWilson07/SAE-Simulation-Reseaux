@@ -119,22 +119,30 @@ void afficherTableCommutation(Switch sw, int taille) {
 void afficherEquipement(Equipement const *e, int const index) {
     //S'occupe de l'affichage d'un équipement
     printf("Équipement %d : ", index);
-    if (e->type == STATION_TYPE) {
+    switch (e->type)
+    {
+    case STATION_TYPE:
         printf("Station\n");
         printf("  MAC : ");
         affiche_mac(e->mac);
         printf("\n  IP  : ");
         affiche_ip(e->station.ip);
         printf("\n");
-    } else if (e->type == SWITCH_TYPE) {
+        break;
+
+    case SWITCH_TYPE:
         printf("Switch\n");
         printf("  MAC : ");
         affiche_mac(e->mac);
         printf("\n  Nombre de ports : %d\n", e->sw.nb_port);
         printf("  Priorité : %d\n", e->sw.priorite);
         afficherTableCommutation(e->sw, e->sw.nb_port);
-    } else {
+        break;
+
+    default:
         printf("Type inconnu.\n");
+        exit(EXIT_FAILURE);
+        break;
     }
 }
 
