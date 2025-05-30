@@ -14,7 +14,7 @@ void construireReseau(char const *path, Graphe *g) {
         "Erreur : Nb de Equipement ou Nb de Lien");
     //Vérification de la cohérence des valeurs
     if(nbEquipement <= 0 || nbLiens <= 0) {
-        printf("Le nombre d'équipements et liens "
+        printf("Erreur : Le nombre d'équipements et liens "
             "ne peut pas être négatif ou nul\n");
         exit(EXIT_FAILURE);
     }
@@ -27,15 +27,22 @@ void construireReseau(char const *path, Graphe *g) {
         ajouterEquipement(bufferLigne,g,i);
     }
     //Création de la matrice d'ajacence
-    CHKNULL(g->matrice_adjacence = calloc(nbEquipement*nbEquipement, 
-        sizeof(uint8_t)));   
-
+    CHKNULL(g->matrice_adjacence = malloc(nbEquipement*nbEquipement * sizeof(uint8_t)));
+    //Inisialisation à la valeur max (Laisse les poids de 0 possible)
+    for (size_t i = 0; i < nbEquipement*nbEquipement; i++)
+        *(g->matrice_adjacence + i) = UINT8_MAX;
+    
     //Enregistrement des liens
     for (size_t i = 0; i < nbLiens; i++)
     {
-        
+        int s1, s2, poids;
+        CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
+        CHKSSCANF(sscanf(bufferLigne,"%d;%d;%d", &s1, &s2, &poids),3,
+            "Erreur de lecture du lien"); //Lecture des valeurs
+        // MAJ de la matrice d'adjacence dans le deux sens
+        *(g->matrice_adjacence + s1 * nbEquipement + s2) = poids;
+        *(g->matrice_adjacence + s2 * nbEquipement + s1) = poids;
     }
-    
         
     CHK0(fclose(f)); //Fermeture du fichier
 } 
@@ -62,20 +69,20 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
 
     //Parse de l'adresse MAC de l'équipement
     mac_addr_t mac;
-    CHKSSCANF(sscanf(rest, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
-           &e.mac[0], &e.mac[1], &e.mac[2], &e.mac[3], &e.mac[4], &e.mac[5]),6, 
-           "Erreur de lecture de l'adresse MAC\n");
+    CHKSSCANF(sscanf(rest, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx;%n",
+           &e.mac[0], &e.mac[1], &e.mac[2], &e.mac[3], &e.mac[4], &e.mac[5], 
+           &offset), 6, "Erreur de lecture de l'adresse MAC\n");
     rest = rest + offset;
-    
+
     //Parse des autres attributs en fonction du type
     switch (e.type)
     {
     case STATION_TYPE:
         //Parse de l'ip
-        ip_addr_t *ip = &e.station.ip;
+        //ip_addr_t *ip = e.station.ip;
         CHKSSCANF(sscanf(rest, "%hhu.%hhu.%hhu.%hhu",
-        ip[0], ip[1], ip[2], ip[3]),4,
-        "Erreur de lecture de l'adresse IP\n");
+        &e.station.ip[0], &e.station.ip[1], &e.station.ip[2], 
+        &e.station.ip[3]),4, "Erreur de lecture de l'adresse IP\n");
         break;
 
     case SWITCH_TYPE:
@@ -148,7 +155,7 @@ void afficherMatriceAdja(Graphe const *g){
     printf("=== Matrice d'adjacence ===\n");
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            printf("%d ", g->matrice_adjacence[i * n + j]);
+            printf("%d\t", g->matrice_adjacence[i * n + j]);
         }
         printf("\n");
     }
