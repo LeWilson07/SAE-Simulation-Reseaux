@@ -20,18 +20,34 @@ void construireReseau(char const *path, Graphe *g) {
     }
     //Enregistrement des stations
     g->nb_equipements = nbEquipement;
-    CHKNULL(g->equipements = malloc(nbEquipement * sizeof(Equipement)));
+    CHKNULL(g->equipements = calloc(nbEquipement, sizeof(Equipement)));
     for (size_t i = 0; i < nbEquipement; i++)
     {
         CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
         ajouterEquipement(bufferLigne,g,i);
     }
     //Création de la matrice d'ajacence
+    CHKNULL(g->matrice_adjacence = calloc(nbEquipement*nbEquipement, 
+        sizeof(uint8_t)));   
 
     //Enregistrement des liens
+    for (size_t i = 0; i < nbLiens; i++)
+    {
+        
+    }
+    
         
     CHK0(fclose(f)); //Fermeture du fichier
 } 
+
+void libererReseau(Graphe *g){
+    //Libère tout les champs allouer de réseau et mets le reste à 0
+    g->nb_equipements = 0;
+    free(g->equipements);
+    g->equipements = NULL;
+    free(g->matrice_adjacence);
+    g->matrice_adjacence = NULL;
+}
 
 void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     Equipement e;

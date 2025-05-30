@@ -6,7 +6,7 @@
 int main() {
     Graphe g;
     construireReseau("test.lan",&g);
-
+    libererReseau(&g);
     /*
     trame t;
 
