@@ -1,5 +1,5 @@
 #include "reseaux.h"
-
+#include "adresse.h"
 
 
 void construireReseau(char const *path, Graphe *g) {
@@ -20,7 +20,7 @@ void construireReseau(char const *path, Graphe *g) {
     }
     //Enregistrement des stations
     g->nb_equipements = nbEquipement;
-    CHKNULL(g->equipements = malloc(nbEquipement * sizeof(*g->equipements)));
+    CHKNULL(g->equipements = malloc(nbEquipement * sizeof(Equipement)));
     for (size_t i = 0; i < nbEquipement; i++)
     {
         CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
@@ -32,32 +32,43 @@ void construireReseau(char const *path, Graphe *g) {
     CHK0(fclose(f)); //Fermeture du fichier
 } 
 
-void ajouterEquipement(char const *ligne, Graphe *g ,int const index){
-    int type;
+void ajouterEquipement(char *ligne, Graphe *g ,int const index){
+    Equipement e;
     int offset;
-    CHKSSCANF(sscanf(ligne, "%d;%n", &type, &offset),1,"Erreur : Scan du type d'équipement");
+
+    //Parse du Type d'équipement
+    int type;
+    CHKSSCANF(sscanf(ligne, "%d;%n", &type, &offset),1,
+        "Erreur : Scan du type d'équipement");
     char *rest = ligne + offset;
-    switch (type)
+    e.type = type - 1; //Correspond au type de l'enum
+
+    //Parse de l'adresse MAC de l'équipement
+    mac_addr_t mac;
+    CHKSSCANF(sscanf(rest, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+           &e.mac[0], &e.mac[1], &e.mac[2], &e.mac[3], &e.mac[4], &e.mac[5]),6, 
+           "Erreur de lecture de l'adresse MAC\n");
+    rest = ligne + offset;
+    
+    //Parse des autres attributs en fonction du type
+    switch (e.type)
     {
-    case 1:
-        ajouterStation(rest, g, index);
+    case STATION_TYPE:
+        //Parse de l'ip
+        ip_addr_t *ip = &e.station.ip;
+        CHKSSCANF(sscanf(rest, "%hhd.%hhd.%hhd.%hhd",
+        ip[0], ip[1], ip[2], ip[3]),4,
+        "Erreur de lecture de l'adresse IP\n");
         break;
-    case 2:
-        ajouterSwitch(rest, g, index);
+    case SWITCH_TYPE:
+        //Parse du nombre de port
+        //Parse priorité
         break;
     default:
         printf("Erreur : Type d'équipement inconnu\n");
         exit(EXIT_FAILURE);
         break;
     }   
-}
-
-void ajouterSwitch(char const * ligne, Graphe *g ,int const index){
-
-}
-
-void ajouterStation(char const * ligne, Graphe *g ,int const index){
-
 }
 
 void afficherTableCommutation(Switch sw, int taille) {
@@ -78,14 +89,14 @@ void afficherEquipement(Equipement *e, int const index) {
     if (e->type == STATION_TYPE) {
         printf("Station\n");
         printf("  MAC : ");
-        affiche_mac(e->station.mac);
+        affiche_mac(e->mac);
         printf("\n  IP  : ");
         affiche_ip(e->station.ip);
         printf("\n");
     } else if (e->type == SWITCH_TYPE) {
         printf("Switch\n");
         printf("  MAC : ");
-        affiche_mac(e->sw.mac);
+        affiche_mac(e->mac);
         printf("\n  Nombre de ports : %d\n", e->sw.nb_port);
         printf("  Priorité : %d\n", e->sw.priorite);
         afficherTableCommutation(e->sw, e->sw.nb_port);

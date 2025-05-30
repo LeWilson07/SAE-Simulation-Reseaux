@@ -30,7 +30,6 @@
 } while(0)
 
 typedef struct {
-    mac_addr_t mac;
     ip_addr_t ip;
 } Station;
 
@@ -41,9 +40,8 @@ typedef struct{
 }Commutation;
 
 typedef struct{
-    mac_addr_t mac;
     uint8_t nb_port;
-    int priorite; 
+    uint16_t priorite; 
     Commutation* tableCommu;
 }Switch;
 
@@ -54,6 +52,7 @@ typedef enum {
 
 typedef struct {
     EquipementType type;
+    mac_addr_t mac;
     union {
         Station station;
         Switch sw;
@@ -67,9 +66,9 @@ typedef struct {
 } Graphe;
 
 void construireReseau(char const *path, Graphe *g);
-void ajouterEquipement(char const *ligne, Graphe *g ,int const index);
-void ajouterSwitch(char const * ligne, Graphe *g ,int const index);
-void ajouterStation(char const * ligne, Graphe *g ,int const index);
+void ajouterEquipement(char *ligne, Graphe *g ,int const index);
+void ajouterSwitch(char * ligne, Graphe *g ,int const index);
+void ajouterStation(char * ligne, Graphe *g ,int const index);
 void afficherTableCommutation(Switch sw,int const taille);
 void afficherEquipement(Equipement *e,int const index);
 void afficherGraphe(Graphe g);
