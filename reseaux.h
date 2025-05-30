@@ -62,16 +62,12 @@ typedef struct {
 typedef struct {
     int nb_equipements;
     Equipement *equipements;
-    int** matrice_adjacence;
+    uint8_t *matrice_adjacence;
 } Graphe;
 
 void construireReseau(char const *path, Graphe *g);
 void ajouterEquipement(char *ligne, Graphe *g ,int const index);
-void ajouterSwitch(char * ligne, Graphe *g ,int const index);
-void ajouterStation(char * ligne, Graphe *g ,int const index);
 void afficherTableCommutation(Switch sw,int const taille);
-void afficherEquipement(Equipement *e,int const index);
-void afficherGraphe(Graphe g);
-
-
-
+void afficherEquipement(Equipement const *e,int const index);
+void afficherGraphe(Graphe const *g);
+void afficherMatriceAdja(Graphe const *g);

@@ -26,6 +26,7 @@ void construireReseau(char const *path, Graphe *g) {
         CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
         ajouterEquipement(bufferLigne,g,i);
     }
+    //Création de la matrice d'ajacence
 
     //Enregistrement des liens
         
@@ -92,7 +93,7 @@ void afficherTableCommutation(Switch sw, int taille) {
     printf("----------------------------------\n");
 }
 
-void afficherEquipement(Equipement *e, int const index) {
+void afficherEquipement(Equipement const *e, int const index) {
     //S'occupe de l'affichage d'un équipement
     printf("Équipement %d : ", index);
     if (e->type == STATION_TYPE) {
@@ -114,19 +115,24 @@ void afficherEquipement(Equipement *e, int const index) {
     }
 }
 
-void afficherGraphe(Graphe g) {
+void afficherGraphe(Graphe const *g) {
     //S'occupe d'afficher le graphe (donc sa matrice d'adjacence)
     printf("=== Graphe du réseau ===\n");
-    printf("Nombre d'équipements : %d\n\n", g.nb_equipements);
+    printf("Nombre d'équipements : %d\n\n", g->nb_equipements);
 
-    for (int i = 0; i < g.nb_equipements; ++i) {
-        afficherEquipement(&g.equipements[i], i);
+    for (int i = 0; i < g->nb_equipements; ++i) {
+        afficherEquipement(g->equipements + i, i);
     }
+    printf("\n");
+    afficherMatriceAdja(g);
+}
 
-    printf("\n=== Matrice d'adjacence ===\n");
-    for (int i = 0; i < g.nb_equipements; ++i) {
-        for (int j = 0; j < g.nb_equipements; ++j) {
-            printf("%d ", g.matrice_adjacence[i][j]);
+void afficherMatriceAdja(Graphe const *g){
+    int n = g->nb_equipements;
+    printf("=== Matrice d'adjacence ===\n");
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            printf("%d ", g->matrice_adjacence[i * n + j]);
         }
         printf("\n");
     }
