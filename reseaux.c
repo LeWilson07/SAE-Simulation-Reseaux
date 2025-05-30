@@ -48,7 +48,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     CHKSSCANF(sscanf(rest, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
            &e.mac[0], &e.mac[1], &e.mac[2], &e.mac[3], &e.mac[4], &e.mac[5]),6, 
            "Erreur de lecture de l'adresse MAC\n");
-    rest = ligne + offset;
+    rest = rest + offset;
     
     //Parse des autres attributs en fonction du type
     switch (e.type)
@@ -56,19 +56,28 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     case STATION_TYPE:
         //Parse de l'ip
         ip_addr_t *ip = &e.station.ip;
-        CHKSSCANF(sscanf(rest, "%hhd.%hhd.%hhd.%hhd",
+        CHKSSCANF(sscanf(rest, "%hhu.%hhu.%hhu.%hhu",
         ip[0], ip[1], ip[2], ip[3]),4,
         "Erreur de lecture de l'adresse IP\n");
         break;
+
     case SWITCH_TYPE:
         //Parse du nombre de port
+        CHKSSCANF(sscanf(rest,"%hhu;%n",&e.sw.nb_port, &offset),1,
+        "Erreur dans la lecture du nombre de port");
+        rest = rest + offset;
         //Parse priorité
+        CHKSSCANF(sscanf(rest,"%hu",&e.sw.priorite),1,
+        "Erreur dans la lecture du nombre de la priorité");
         break;
+
     default:
         printf("Erreur : Type d'équipement inconnu\n");
         exit(EXIT_FAILURE);
         break;
-    }   
+    }
+    //Ajout de l'équipement au réseau
+    *(g->equipements + index) = e;
 }
 
 void afficherTableCommutation(Switch sw, int taille) {
