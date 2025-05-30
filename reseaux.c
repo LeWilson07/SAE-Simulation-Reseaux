@@ -34,8 +34,30 @@ void construireReseau(char const *path, Graphe *g) {
 
 void ajouterEquipement(char const *ligne, Graphe *g ,int const index){
     int type;
-    
-    
+    int offset;
+    CHKSSCANF(sscanf(ligne, "%d;%n", &type, &offset),1,"Erreur : Scan du type d'équipement");
+    char *rest = ligne + offset;
+    switch (type)
+    {
+    case 1:
+        ajouterStation(rest, g, index);
+        break;
+    case 2:
+        ajouterSwitch(rest, g, index);
+        break;
+    default:
+        printf("Erreur : Type d'équipement inconnu\n");
+        exit(EXIT_FAILURE);
+        break;
+    }   
+}
+
+void ajouterSwitch(char const * ligne, Graphe *g ,int const index){
+
+}
+
+void ajouterStation(char const * ligne, Graphe *g ,int const index){
+
 }
 
 void afficherTableCommutation(Switch sw, int taille) {

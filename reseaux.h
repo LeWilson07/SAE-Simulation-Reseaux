@@ -68,6 +68,8 @@ typedef struct {
 
 void construireReseau(char const *path, Graphe *g);
 void ajouterEquipement(char const *ligne, Graphe *g ,int const index);
+void ajouterSwitch(char const * ligne, Graphe *g ,int const index);
+void ajouterStation(char const * ligne, Graphe *g ,int const index);
 void afficherTableCommutation(Switch sw,int const taille);
 void afficherEquipement(Equipement *e,int const index);
 void afficherGraphe(Graphe g);
