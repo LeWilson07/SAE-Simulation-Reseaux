@@ -12,7 +12,7 @@ void affiche_ip(ip_addr_t const ip)
 
 void affiche_mac(mac_addr_t const mac)
 {
-    printf("%X",*mac);
+    printf("%02X",*mac);
     for (size_t i = 1; i < 6; i++)
     {
         printf(":");
