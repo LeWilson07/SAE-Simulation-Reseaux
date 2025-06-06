@@ -57,7 +57,7 @@ void libererReseau(Graphe *g){
 }
 
 void ajouterEquipement(char *ligne, Graphe *g ,int const index){
-    Equipement e;
+    Equipement e = {0};
     int offset;
 
     //Parse du Type d'équipement
@@ -93,6 +93,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
         //Parse priorité
         CHKSSCANF(sscanf(rest,"%hu",&e.sw.priorite),1,
         "Erreur dans la lecture du nombre de la priorité");
+        printf("%d\n", e.sw.tableCommu == NULL);
         break;
 
     default:
