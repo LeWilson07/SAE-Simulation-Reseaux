@@ -4,6 +4,11 @@
 
 
 int main() {
+    Graphe g;
+    construireReseau("test.lan",&g);
+    afficherGraphe(&g);
+    libererReseau(&g);
+    /*
     trame t;
 
     // Remplir le préambule avec une valeur fixe
@@ -32,6 +37,6 @@ int main() {
 
     // Libération mémoire
     free(t.data);
-
+    */
     return 0;
 }

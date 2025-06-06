@@ -1,13 +1,35 @@
-#pragma once 
+#pragma once
 
+#include "adresse.h"
+
+#include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <stdlib.h> 
 #include <stdbool.h>
-#include  "adresse.h"
-#include "trame.h"
 
+#define CHK0(op) do { \
+    if((op) != 0) { \
+        perror(#op); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define CHKNULL(op) do { \
+    if((op) == NULL) { \
+        perror(#op); \
+        exit(EXIT_FAILURE); \
+    }\
+} while(0)
+
+#define CHKSSCANF(op,nbVal,desc) do { \
+    if ((op) != nbVal) { \
+        printf("%s\n",desc); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
 
 typedef struct {
-    mac_addr_t mac;
     ip_addr_t ip;
 } Station;
 
@@ -17,11 +39,9 @@ typedef struct{
 
 }Commutation;
 
-
 typedef struct{
-    mac_addr_t mac;
     uint8_t nb_port;
-    int priorite; 
+    uint16_t priorite; 
     Commutation* tableCommu;
 }Switch;
 
@@ -32,23 +52,23 @@ typedef enum {
 
 typedef struct {
     EquipementType type;
+    mac_addr_t mac;
     union {
         Station station;
         Switch sw;
     };
 } Equipement;
 
-
-
 typedef struct {
     int nb_equipements;
     Equipement *equipements;
-    int** matrice_adjacence;
+    uint8_t *matrice_adjacence;
 } Graphe;
 
+void construireReseau(char const *path, Graphe *g);
+void libererReseau(Graphe *g);
+void ajouterEquipement(char *ligne, Graphe *g ,int const index);
 void afficherTableCommutation(Switch sw,int const taille);
-//void afficherEquipement(Equipement *e,int const index);
-void afficherGraphe(Graphe g);
-
-
-
+void afficherEquipement(Equipement const *e,int const index);
+void afficherGraphe(Graphe const *g);
+void afficherMatriceAdja(Graphe const *g);
