@@ -41,7 +41,9 @@ typedef struct{
 
 typedef struct{
     uint8_t nb_port;
-    uint16_t priorite; 
+    uint16_t priorite;
+    uint16_t commu_capacite;
+    uint16_t nb_commu; 
     Commutation* tableCommu;
 }Switch;
 

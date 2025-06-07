@@ -113,7 +113,7 @@ void afficherTableCommutation(Switch sw, int taille) {
     printf("----------------------------------\n");
     for (int i = 0; i < taille; ++i) {
         printf("MAC : ");
-        affiche_mac(sw.tableCommu->adresse_mac.addr); 
+        affiche_mac(&sw.tableCommu->adresse_mac); 
         printf(" → Port : %d\n", sw.tableCommu->port);
     }
     printf("----------------------------------\n");
@@ -127,16 +127,16 @@ void afficherEquipement(Equipement const *e, int const index) {
     case STATION_TYPE:
         printf("Station\n");
         printf("  MAC : ");
-        affiche_mac(e->mac.addr);
+        affiche_mac(&e->mac);
         printf("\n  IP  : ");
-        affiche_ip(e->station.ip.addr);
+        affiche_ip(&e->station.ip);
         printf("\n");
         break;
 
     case SWITCH_TYPE:
         printf("Switch\n");
         printf("  MAC : ");
-        affiche_mac(e->mac.addr);
+        affiche_mac(&e->mac);
         printf("\n  Nombre de ports : %d\n", e->sw.nb_port);
         printf("  Priorité : %d\n", e->sw.priorite);
         afficherTableCommutation(e->sw, e->sw.nb_port);
