@@ -4,9 +4,16 @@
 #include <stdio.h>
 
 //Adresse MAC
-typedef uint8_t mac_addr_t[6];
-//Adresse IP
-typedef uint8_t ip_addr_t[4];
+typedef struct {
+    uint8_t addr[6];
+} mac_addr_t;
 
-void affiche_ip(ip_addr_t const ip);
-void affiche_mac(mac_addr_t const mac);
+//Adresse IP
+typedef struct {
+    uint8_t addr[4];
+} ip_addr_t;
+
+void affiche_ip(const ip_addr_t *ip);
+void affiche_mac(const mac_addr_t *mac);
+
+char comparer_mac(const mac_addr_t *mac1, const mac_addr_t *mac2);

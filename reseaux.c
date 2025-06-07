@@ -70,8 +70,9 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     //Parse de l'adresse MAC de l'équipement
     mac_addr_t mac;
     CHKSSCANF(sscanf(rest, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx;%n",
-           &e.mac[0], &e.mac[1], &e.mac[2], &e.mac[3], &e.mac[4], &e.mac[5], 
-           &offset), 6, "Erreur de lecture de l'adresse MAC\n");
+        &e.mac.addr[0], &e.mac.addr[1], &e.mac.addr[2], &e.mac.addr[3],
+        &e.mac.addr[4], &e.mac.addr[5], &offset),
+        6, "Erreur de lecture de l'adresse MAC\n");
     rest = rest + offset;
 
     //Parse des autres attributs en fonction du type
@@ -81,8 +82,9 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
         //Parse de l'ip
         //ip_addr_t *ip = e.station.ip;
         CHKSSCANF(sscanf(rest, "%hhu.%hhu.%hhu.%hhu",
-        &e.station.ip[0], &e.station.ip[1], &e.station.ip[2], 
-        &e.station.ip[3]),4, "Erreur de lecture de l'adresse IP\n");
+            &e.station.ip.addr[0], &e.station.ip.addr[1],
+            &e.station.ip.addr[2], &e.station.ip.addr[3]),
+            4, "Erreur de lecture de l'adresse IP\n");
         break;
 
     case SWITCH_TYPE:
@@ -111,7 +113,7 @@ void afficherTableCommutation(Switch sw, int taille) {
     printf("----------------------------------\n");
     for (int i = 0; i < taille; ++i) {
         printf("MAC : ");
-        affiche_mac(sw.tableCommu->adresse_mac); 
+        affiche_mac(sw.tableCommu->adresse_mac.addr); 
         printf(" → Port : %d\n", sw.tableCommu->port);
     }
     printf("----------------------------------\n");
@@ -125,16 +127,16 @@ void afficherEquipement(Equipement const *e, int const index) {
     case STATION_TYPE:
         printf("Station\n");
         printf("  MAC : ");
-        affiche_mac(e->mac);
+        affiche_mac(e->mac.addr);
         printf("\n  IP  : ");
-        affiche_ip(e->station.ip);
+        affiche_ip(e->station.ip.addr);
         printf("\n");
         break;
 
     case SWITCH_TYPE:
         printf("Switch\n");
         printf("  MAC : ");
-        affiche_mac(e->mac);
+        affiche_mac(e->mac.addr);
         printf("\n  Nombre de ports : %d\n", e->sw.nb_port);
         printf("  Priorité : %d\n", e->sw.priorite);
         afficherTableCommutation(e->sw, e->sw.nb_port);
