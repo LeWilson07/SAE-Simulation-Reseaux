@@ -1,5 +1,6 @@
 #include "reseaux.h"
 #include "adresse.h"
+#include "trame.h"
 
 
 void construireReseau(char const *path, Graphe *g) {
@@ -251,4 +252,8 @@ void afficherMatriceAdja(Graphe const *g){
         }
         printf("\n");
     }
+}
+
+void transmettreTrame(Equipement e, Trame tr){
+    
 }

@@ -9,7 +9,7 @@ void affiche_octets(const uint8_t *octets, size_t taille) {
 }
 
 
-void affiche_trame(trame const *tr){
+void affiche_trame(Trame const *tr){
     printf("=== TRAME ===\n");
 
     printf("Preambule     : ");
@@ -33,6 +33,6 @@ void affiche_trame(trame const *tr){
     affiche_octets(tr->fcs, 4);
 }
 
-void liberer_trame(trame *tr){
+void liberer_trame(Trame *tr){
     free(tr->data);
 }

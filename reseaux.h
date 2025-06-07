@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <stdlib.h> 
 #include <stdbool.h>
 
 #define NOMBRE_COMMUTATION_DEFAUT 4

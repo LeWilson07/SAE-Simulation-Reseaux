@@ -6,7 +6,7 @@
 int main() {
     
     Graphe g;
-    construireReseau("test.lan",&g);
+    construireReseau("mylan_no_cycle.lan",&g);
     afficherGraphe(&g);
     libererReseau(&g);
     
