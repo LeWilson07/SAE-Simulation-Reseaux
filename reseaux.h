@@ -8,6 +8,8 @@
 #include <stdlib.h> 
 #include <stdbool.h>
 
+#define NOMBRE_COMMUTATION_DEFAUT 4
+
 #define CHK0(op) do { \
     if((op) != 0) { \
         perror(#op); \
@@ -30,14 +32,15 @@
 } while(0)
 
 typedef struct {
+    uint8_t num;
+    int indexEquipement;
+} Port;
+
+
+typedef struct {
     ip_addr_t ip;
     Port port;
 } Station;
-
-typedef struct {
-    uint8_t num;
-    uint32_t indexEquipement;
-} Port;
 
 typedef struct{
     uint8_t port;
@@ -74,10 +77,12 @@ typedef struct {
 } Graphe;
 
 void construireReseau(char const *path, Graphe *g);
+void construirePort(Graphe *g, int s1, int s2);
 void libererReseau(Graphe *g);
 void ajouterEquipement(char *ligne, Graphe *g ,int const index);
-void ajouterCommutation(Switch sw,  mac_addr_t const *mac);
-void afficherTableCommutation(Switch const sw);
+void ajouterCommutation(Switch *sw,  mac_addr_t const *mac);
+void afficherPortSwitch(Switch const *sw);
+void afficherTableCommutation(Switch const *sw);
 void afficherEquipement(Equipement const *e,int const index);
 void afficherGraphe(Graphe const *g);
 void afficherMatriceAdja(Graphe const *g);

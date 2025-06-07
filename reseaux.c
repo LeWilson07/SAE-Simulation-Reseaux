@@ -42,17 +42,49 @@ void construireReseau(char const *path, Graphe *g) {
         // MAJ de la matrice d'adjacence dans le deux sens
         *(g->matrice_adjacence + s1 * nbEquipement + s2) = poids;
         *(g->matrice_adjacence + s2 * nbEquipement + s1) = poids;
+        construirePort(g,s1,s2);
+        construirePort(g,s2,s1);
     }
         
     CHK0(fclose(f)); //Fermeture du fichier
 } 
 
+void construirePort(Graphe *g, int s1, int s2){
+    //On va mettre sur le premier port disponible de l'équipement l'index l'autre.
+    Equipement e = g->equipements[s1];
+    switch (e.type)
+    {
+    case STATION_TYPE:
+        if (e.station.port.indexEquipement == -1)
+            e.station.port.indexEquipement = s2;
+        else printf("L'équipement %d n'a pas assez "
+            "de port pour cette configuration\n", s1);
+        break;
+
+    case SWITCH_TYPE:
+        int i = 0;
+        while (i < e.sw.nb_port && e.sw.ports[i].indexEquipement != -1) i++;
+        if(i < e.sw.nb_port)
+            e.sw.ports[i].indexEquipement = s2;
+        else printf("L'équipement %d n'a pas assez "
+            "de port pour cette configuration\n", s1);
+        break;
+
+    default:
+        printf("Erreur : Type d'équipement inconnu\n");
+        exit(EXIT_FAILURE);
+        break; 
+    }
+}
+
 void libererReseau(Graphe *g){
     //Libère la table de commutation des switch
     for (size_t i = 0; i < g->nb_equipements; i++)
     {
-        if (g->equipements[i].type == SWITCH_TYPE)
+        if (g->equipements[i].type == SWITCH_TYPE){
             free(g->equipements[i].sw.tableCommu);
+            free(g->equipements[i].sw.ports);
+        } 
     }
     
     //Libère tout les champs allouer de réseau et mets le reste à 0
@@ -92,20 +124,28 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
             &e.station.ip.addr[0], &e.station.ip.addr[1],
             &e.station.ip.addr[2], &e.station.ip.addr[3]),
             4, "Erreur de lecture de l'adresse IP\n");
+        //Mise en place du port
+        e.station.port.indexEquipement = -1;
         break;
 
     case SWITCH_TYPE:
         //Parse du nombre de port
         CHKSSCANF(sscanf(rest,"%hhu;%n",&e.sw.nb_port, &offset),1,
-        "Erreur dans la lecture du nombre de port");
+        "Erreur dans la lecture du nombre de port\n");
         rest = rest + offset;
         //Parse priorité
         CHKSSCANF(sscanf(rest,"%hu",&e.sw.priorite),1,
-        "Erreur dans la lecture du nombre de la priorité");
+        "Erreur dans la lecture du nombre de la priorité\n");
         //Allocation de la table de commutation
         e.sw.nb_commu = 0;
-        e.sw.commu_capacite = 4;
-        CHKNULL(e.sw.tableCommu = calloc(4,sizeof(Commutation)));
+        e.sw.commu_capacite = 4; //Valeur par défaut
+        CHKNULL(e.sw.tableCommu = calloc(NOMBRE_COMMUTATION_DEFAUT,sizeof(Commutation)));
+        //Allocation de tous les ports du switch
+        CHKNULL(e.sw.ports = calloc(e.sw.nb_port,sizeof(Port)));
+        for (size_t i = 0; i < e.sw.nb_port; i++) {
+            e.sw.ports[i].num = i+1;
+            e.sw.ports[i].indexEquipement = -1;
+        }        
         break;
 
     default:
@@ -117,14 +157,29 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     *(g->equipements + index) = e;
 }
 
-void afficherTableCommutation(Switch const sw) {
+void ajouterCommutation(Switch *sw,  mac_addr_t const *mac){
+
+}
+
+void afficherPortSwitch(Switch const *sw){
+    printf("Etat des ports :\n");
+    printf("----------------\n");
+    for (size_t i = 0; i < sw->nb_port; i++)
+    {
+        printf("Port : %d → Machine : %d\n", sw->ports[i].num, 
+            sw->ports[i].indexEquipement);
+    }
+    
+}
+
+void afficherTableCommutation(Switch const *sw) {
     //S'occupe de l'affichage d'une table de commutation
-    printf("Table de commutation (%d entrées) :\n", sw.nb_commu);
+    printf("Table de commutation (%d entrées) :\n", sw->nb_commu);
     printf("----------------------------------\n");
-    for (int i = 0; i < sw.nb_commu; ++i) {
+    for (int i = 0; i < sw->nb_commu; ++i) {
         printf("MAC : ");
-        affiche_mac(&sw.tableCommu->adresse_mac); 
-        printf(" → Port : %d\n", sw.tableCommu->port);
+        affiche_mac(&sw->tableCommu->adresse_mac); //Régler le +i car affiche tjr la même
+        printf(" → Port : %d\n", sw->tableCommu->port);
     }
     printf("----------------------------------\n");
 }
@@ -149,7 +204,8 @@ void afficherEquipement(Equipement const *e, int const index) {
         affiche_mac(&e->mac);
         printf("\n  Nombre de ports : %d\n", e->sw.nb_port);
         printf("  Priorité : %d\n", e->sw.priorite);
-        afficherTableCommutation(e->sw);
+        afficherTableCommutation(&e->sw);
+        afficherPortSwitch(&e->sw);
         break;
 
     default:
@@ -161,11 +217,11 @@ void afficherEquipement(Equipement const *e, int const index) {
 }
 
 void afficherGraphe(Graphe const *g) {
-    //S'occupe d'afficher le graphe (donc sa matrice d'adjacence)
+    //S'occupe d'afficher le graphe
     printf("=== Graphe du réseau ===\n");
     printf("Nombre d'équipements : %d\n\n", g->nb_equipements);
 
-    for (int i = 0; i < g->nb_equipements; ++i) {
+    for (int i = 0; i < g->nb_equipements; i++) {
         afficherEquipement(g->equipements + i, i);
     }
     printf("\n");
