@@ -23,7 +23,7 @@ void affiche_mac(const mac_addr_t *mac)
 char comparer_mac(const mac_addr_t *mac1, const mac_addr_t *mac2){
     //La fonction retourne 0 si les adresses MAC sont similaires
     //1 Si la mac1 est après mac2 et -1 si l'inverse
-    if (mac1->addr != NULL && mac1->addr != NULL) exit(EXIT_FAILURE);
+    if (mac1->addr == NULL || mac1->addr == NULL) exit(EXIT_FAILURE);
     int cmp = memcmp(mac1->addr, mac2->addr, 6);
     if (cmp == 0) return 0;
     return (cmp > 0) ? 1 : -1;
