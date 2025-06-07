@@ -95,7 +95,10 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
         //Parse priorité
         CHKSSCANF(sscanf(rest,"%hu",&e.sw.priorite),1,
         "Erreur dans la lecture du nombre de la priorité");
-        printf("%d\n", e.sw.tableCommu == NULL);
+        //Allocation de la table de commutation
+        e.sw.nb_commu = 0;
+        e.sw.commu_capacite = 4;
+        CHKNULL(e.sw.tableCommu = calloc(4,sizeof(Commutation)));
         break;
 
     default:
@@ -107,11 +110,11 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     *(g->equipements + index) = e;
 }
 
-void afficherTableCommutation(Switch sw, int taille) {
+void afficherTableCommutation(Switch const sw) {
     //S'occupe de l'affichage d'une table de commutation
-    printf("Table de commutation (%d entrées) :\n", taille);
+    printf("Table de commutation (%d entrées) :\n", sw.nb_commu);
     printf("----------------------------------\n");
-    for (int i = 0; i < taille; ++i) {
+    for (int i = 0; i < sw.nb_commu; ++i) {
         printf("MAC : ");
         affiche_mac(&sw.tableCommu->adresse_mac); 
         printf(" → Port : %d\n", sw.tableCommu->port);
@@ -139,7 +142,7 @@ void afficherEquipement(Equipement const *e, int const index) {
         affiche_mac(&e->mac);
         printf("\n  Nombre de ports : %d\n", e->sw.nb_port);
         printf("  Priorité : %d\n", e->sw.priorite);
-        afficherTableCommutation(e->sw, e->sw.nb_port);
+        afficherTableCommutation(e->sw);
         break;
 
     default:
@@ -147,6 +150,7 @@ void afficherEquipement(Equipement const *e, int const index) {
         exit(EXIT_FAILURE);
         break;
     }
+    printf("\n");
 }
 
 void afficherGraphe(Graphe const *g) {
@@ -158,7 +162,7 @@ void afficherGraphe(Graphe const *g) {
         afficherEquipement(g->equipements + i, i);
     }
     printf("\n");
-    afficherMatriceAdja(g);
+    //afficherMatriceAdja(g);
 }
 
 void afficherMatriceAdja(Graphe const *g){
