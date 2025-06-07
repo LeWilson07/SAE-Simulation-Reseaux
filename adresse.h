@@ -13,7 +13,7 @@ typedef struct {
     uint8_t addr[4];
 } ip_addr_t;
 
-void affiche_ip(const ip_addr_t *ip);
-void affiche_mac(const mac_addr_t *mac);
+void affiche_ip(ip_addr_t const *ip);
+void affiche_mac(mac_addr_t const *mac);
 
-char comparer_mac(const mac_addr_t *mac1, const mac_addr_t *mac2);
+char comparer_mac(mac_addr_t const *mac1, mac_addr_t const *mac2);

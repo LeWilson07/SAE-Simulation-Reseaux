@@ -31,16 +31,22 @@
 
 typedef struct {
     ip_addr_t ip;
+    Port port;
 } Station;
+
+typedef struct {
+    uint8_t num;
+    uint32_t indexEquipement;
+} Port;
 
 typedef struct{
     uint8_t port;
     mac_addr_t adresse_mac;
-
 }Commutation;
 
 typedef struct{
     uint8_t nb_port;
+    Port *ports;
     uint16_t priorite;
     uint16_t commu_capacite;
     uint16_t nb_commu; 
@@ -70,6 +76,7 @@ typedef struct {
 void construireReseau(char const *path, Graphe *g);
 void libererReseau(Graphe *g);
 void ajouterEquipement(char *ligne, Graphe *g ,int const index);
+void ajouterCommutation(Switch sw,  mac_addr_t const *mac);
 void afficherTableCommutation(Switch const sw);
 void afficherEquipement(Equipement const *e,int const index);
 void afficherGraphe(Graphe const *g);

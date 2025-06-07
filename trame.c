@@ -17,10 +17,12 @@ void affiche_trame(trame const *tr){
 
     printf("Dest MAC      : ");
     affiche_mac(&tr->dest);
+    printf("\n");
 
     printf("Src MAC       : ");
     affiche_mac(&tr->src);
-
+    printf("\n");  
+     
     printf("Type          : ");
     affiche_octets(tr->type, 2);
 
