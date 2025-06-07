@@ -9,18 +9,28 @@ void affiche_octets(const uint8_t *octets, size_t taille) {
 }
 
 
-void affiche_trame(trame tr){
+void affiche_trame(trame const *tr){
     printf("=== TRAME ===\n");
 
     printf("Preambule     : ");
-    affiche_octets(tr.preambule, 7);
+    affiche_octets(tr->preambule, 7);
+
+    printf("Dest MAC      : ");
+    affiche_mac(&tr->dest);
+
+    printf("Src MAC       : ");
+    affiche_mac(&tr->src);
 
     printf("Type          : ");
-    affiche_octets(tr.type, 2);
+    affiche_octets(tr->type, 2);
 
-    printf("Données (%d octets) : ", tr.tailleData);
-    affiche_octets(tr.data, tr.tailleData);
+    printf("Données (%d octets) : ", tr->tailleData);
+    affiche_octets(tr->data, tr->tailleData);
 
     printf("FCS           : ");
-    affiche_octets(tr.fcs, 4);
+    affiche_octets(tr->fcs, 4);
+}
+
+void liberer_trame(trame *tr){
+    free(tr->data);
 }

@@ -48,6 +48,13 @@ void construireReseau(char const *path, Graphe *g) {
 } 
 
 void libererReseau(Graphe *g){
+    //Libère la table de commutation des switch
+    for (size_t i = 0; i < g->nb_equipements; i++)
+    {
+        if (g->equipements[i].type == SWITCH_TYPE)
+            free(g->equipements[i].sw.tableCommu);
+    }
+    
     //Libère tout les champs allouer de réseau et mets le reste à 0
     g->nb_equipements = 0;
     free(g->equipements);

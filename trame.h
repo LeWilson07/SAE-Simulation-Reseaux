@@ -1,8 +1,9 @@
 #pragma once 
 #include <stdio.h>
 #include <stdint.h>
-#include <adresse.h>
-#include <reseaux.h>
+#include <string.h>
+#include "adresse.h"
+#include "reseaux.h"
 
 
 // Structure de la tram
@@ -16,4 +17,5 @@ typedef struct trame{
     uint16_t tailleData;
 }trame;
 
-void affiche_trame(trame tr);
+void affiche_trame(trame const *tr);
+void liberer_trame(trame *tr);

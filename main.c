@@ -4,11 +4,13 @@
 
 
 int main() {
+
+    /*
     Graphe g;
     construireReseau("test.lan",&g);
     afficherGraphe(&g);
     libererReseau(&g);
-    /*
+    */
     trame t;
 
     // Remplir le préambule avec une valeur fixe
@@ -33,10 +35,10 @@ int main() {
     t.fcs[3] = 0xEF;
 
     // Affichage
-    affiche_trame(t);
+    affiche_trame(&t);
 
     // Libération mémoire
-    free(t.data);
-    */
+    liberer_trame(&t);
+
     return 0;
 }
