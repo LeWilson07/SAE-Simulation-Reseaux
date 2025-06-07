@@ -39,9 +39,14 @@ void construireReseau(char const *path, Graphe *g) {
         CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
         CHKSSCANF(sscanf(bufferLigne,"%d;%d;%d", &s1, &s2, &poids),3,
             "Erreur de lecture du lien"); //Lecture des valeurs
+        if (s1 >= nbEquipement || s2 >= nbEquipement){
+            printf("Ce lien possède un index supérieur au nombre de machine du réseau");
+            exit(EXIT_FAILURE);
+        }
         // MAJ de la matrice d'adjacence dans le deux sens
         *(g->matrice_adjacence + s1 * nbEquipement + s2) = poids;
         *(g->matrice_adjacence + s2 * nbEquipement + s1) = poids;
+        // MAJ des ports des equipement concernés
         construirePort(g,s1,s2);
         construirePort(g,s2,s1);
     }
@@ -139,7 +144,8 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
         //Allocation de la table de commutation
         e.sw.nb_commu = 0;
         e.sw.commu_capacite = 4; //Valeur par défaut
-        CHKNULL(e.sw.tableCommu = calloc(NOMBRE_COMMUTATION_DEFAUT,sizeof(Commutation)));
+        CHKNULL(e.sw.tableCommu = calloc(NOMBRE_COMMUTATION_DEFAUT, \
+            sizeof(Commutation)));
         //Allocation de tous les ports du switch
         CHKNULL(e.sw.ports = calloc(e.sw.nb_port,sizeof(Port)));
         for (size_t i = 0; i < e.sw.nb_port; i++) {
@@ -157,8 +163,16 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     *(g->equipements + index) = e;
 }
 
-void ajouterCommutation(Switch *sw,  mac_addr_t const *mac){
-
+void ajouterCommutation(Switch *sw,  mac_addr_t const *mac, uint8_t indexPort){
+    //Ajout de place dans la table de commutation si nécessaire
+    if (sw->nb_commu == sw->commu_capacite){
+        CHKNULL(sw->tableCommu = realloc(sw->tableCommu,sw->commu_capacite * \
+            2 * sizeof(Commutation)));
+        sw->commu_capacite *= 2;
+    }
+    //Enregistrement de la commutation
+    (sw->tableCommu + sw->nb_commu)->port = indexPort;
+    (sw->tableCommu + sw->nb_commu)->adresse_mac = *mac;
 }
 
 void afficherPortSwitch(Switch const *sw){
@@ -169,7 +183,7 @@ void afficherPortSwitch(Switch const *sw){
         printf("Port : %d → Machine : %d\n", sw->ports[i].num, 
             sw->ports[i].indexEquipement);
     }
-    
+    printf("----------------\n");
 }
 
 void afficherTableCommutation(Switch const *sw) {

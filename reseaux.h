@@ -80,7 +80,7 @@ void construireReseau(char const *path, Graphe *g);
 void construirePort(Graphe *g, int s1, int s2);
 void libererReseau(Graphe *g);
 void ajouterEquipement(char *ligne, Graphe *g ,int const index);
-void ajouterCommutation(Switch *sw,  mac_addr_t const *mac);
+void ajouterCommutation(Switch *sw,  mac_addr_t const *mac, uint8_t indexPort);
 void afficherPortSwitch(Switch const *sw);
 void afficherTableCommutation(Switch const *sw);
 void afficherEquipement(Equipement const *e,int const index);
