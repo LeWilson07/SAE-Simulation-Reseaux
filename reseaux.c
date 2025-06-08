@@ -256,6 +256,20 @@ int adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac){
     //Retourne l'index si elle existe sinon -1
 }
 
+uint8_t numPortIndexEquipment(Switch const *sw, int index){
+    //Retourne le numéro du port avec l'index en paramètre, -1 si introuvable
+    for (size_t i = 0; i < sw->nb_port; i++)
+        if (sw->ports[i].indexEquipement == index) return sw->ports[i].num;
+    return -1;
+}
+
+int indexEquipmentNumPort(Switch const *sw, uint8_t numPort){
+    //Retourne l'index de l'equipement derrière le port en paramètre, -1 si introuvable
+    for (size_t i = 0; i < sw->nb_port; i++)
+        if (sw->ports[i].num == numPort) return sw->ports[i].indexEquipement;
+    return -1;
+}
+
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant){
     Equipement e = g->equipements[indexCourant];
     // Vérifier si l'adresse MAC Courant est celle de destination
@@ -266,7 +280,29 @@ void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant
     // On se prépare à transmettre (Si c'est un switch)
     if (e.type == SWITCH_TYPE)
     {
+        //On récupère le port d'arriver
+        uint8_t num = numPortIndexEquipment(&e.sw,indexSrc);
         //On sauvegarde l'adresse MAC source si elle n'est pas connue dans la table de commutation
-        
+        if (adresseDansTabCommu(&e.sw,&tr->src) == -1) {
+            //On ajout l'adresse dans la table de commu
+            ajouterCommutation(&e.sw,&tr->src,num);
+        }
+        //On regarde si la destination est connue pour transmettre
+        int indexPortDest = adresseDansTabCommu(&e.sw,&tr->dest);
+        if (indexPortDest != -1) {
+            //On transmet à la machine sur le bon port
+            uint8_t numPortDest = e.sw.tableCommu[indexPortDest].port;
+            transmettreTrame(g,tr,e.index,indexEquipmentNumPort(&e.sw,numPortDest));
+        }
+        else {
+            //Sinon Broadcast sur tout les ports excepté celui d'arrivé
+            for (size_t i = 0; i < e.sw.nb_port; i++)
+            {
+                int indexEqTransmission = e.sw.ports[i].indexEquipement;
+                if (indexEqTransmission != 0 && indexEqTransmission != indexSrc) {
+                    transmettreTrame(g,tr,e.index,indexEqTransmission);
+                }   
+            }
+        }  
     }  
 }
