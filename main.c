@@ -4,10 +4,22 @@
 
 
 int main() {
+    
     Graphe g;
+<<<<<<< HEAD
     construireReseau("mylan.lan",&g);
+=======
+    construireReseau("mylan_no_cycle.lan",&g);
+>>>>>>> 487072a8043cf02b25f25bd479e2b0c23f0ed03d
     afficherGraphe(&g);
     libererReseau(&g);
+
+    mac_addr_t mac1 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x01}}, mac2 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x02}};
+
+    printf("Affiche -1 : %d", comparer_mac(&mac1,&mac2));
+    printf("Affiche  0 : %d", comparer_mac(&mac2,&mac2));
+    printf("Affiche  1 : %d", comparer_mac(&mac2,&mac1));
+
     /*
     trame t;
 
@@ -33,10 +45,11 @@ int main() {
     t.fcs[3] = 0xEF;
 
     // Affichage
-    affiche_trame(t);
+    affiche_trame(&t);
 
     // Libération mémoire
-    free(t.data);
+    liberer_trame(&t);
     */
+
     return 0;
 }
