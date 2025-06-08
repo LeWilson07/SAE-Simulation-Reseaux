@@ -1,7 +1,4 @@
 #include "reseaux.h"
-#include "adresse.h"
-#include "trame.h"
-
 
 void construireReseau(char const *path, Graphe *g) {
     int nbEquipement;
@@ -161,6 +158,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
         break;
     }
     //Ajout de l'équipement au réseau
+    e.index = index;
     *(g->equipements + index) = e;
 }
 
@@ -254,6 +252,21 @@ void afficherMatriceAdja(Graphe const *g){
     }
 }
 
-void transmettreTrame(Equipement e, Trame tr){
-    
+int adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac){
+    //Retourne l'index si elle existe sinon -1
+}
+
+void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant){
+    Equipement e = g->equipements[indexCourant];
+    // Vérifier si l'adresse MAC Courant est celle de destination
+    if (comparer_mac(&e.mac,&tr->dest) == 0) {
+        printf("La trame est arrivé à destination");
+        return;
+    }
+    // On se prépare à transmettre (Si c'est un switch)
+    if (e.type == SWITCH_TYPE)
+    {
+        //On sauvegarde l'adresse MAC source si elle n'est pas connue dans la table de commutation
+        
+    }  
 }

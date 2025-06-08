@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include "adresse.h"
-#include "reseaux.h"
-
 
 // Structure de la tram
 typedef struct Trame{

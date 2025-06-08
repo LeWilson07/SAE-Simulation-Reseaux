@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "adresse.h"
+#include "trame.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,6 +62,7 @@ typedef enum {
 } EquipementType;
 
 typedef struct {
+    int index;
     EquipementType type;
     mac_addr_t mac;
     union {
@@ -85,3 +87,5 @@ void afficherTableCommutation(Switch const *sw);
 void afficherEquipement(Equipement const *e,int const index);
 void afficherGraphe(Graphe const *g);
 void afficherMatriceAdja(Graphe const *g);
+int  adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac);
+void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant);
