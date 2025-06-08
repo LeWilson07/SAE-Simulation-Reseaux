@@ -6,8 +6,8 @@
 int main() {
     
     Graphe g;
-    //construireReseau("mylan_no_cycle.lan",&g);
-    construireReseau("test.lan",&g);
+    construireReseau("mylan_no_cycle.lan",&g);
+    //construireReseau("test.lan",&g);
     
 
     //mac_addr_t mac1 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x01}}, mac2 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x02}};
@@ -42,20 +42,27 @@ int main() {
     //Ajout des MAC
     // 54:d6:a6:82:c5:02
     // 54:d6:a6:82:c5:07
-    //mac_addr_t mac1 = {{0x54, 0xD6, 0xA6, 0x82, 0xC5, 0x02}};
-    //mac_addr_t mac2 = {{0x54, 0xD6, 0xA6, 0x82, 0xC5, 0x07}};
+    mac_addr_t mac1 = {{0x54, 0xD6, 0xA6, 0x82, 0xC5, 0x01 }};
+    mac_addr_t mac2 = {{0x54, 0xD6, 0xA6, 0x82, 0xC5, 0x08}};
 
 
     // 54:d6:a6:82:c5:23
     // c8:69:72:5e:43:af
-    mac_addr_t mac1 = {{0x54, 0xD6, 0xA6, 0x82, 0xC5, 0x23}};
-    mac_addr_t mac2 = {{0xC8, 0x69, 0x72, 0x5E, 0x43, 0xAF}};
+    //mac_addr_t mac1 = {{0x54, 0xD6, 0xA6, 0x82, 0xC5, 0x23}};
+    //mac_addr_t mac2 = {{0xC8, 0x69, 0x72, 0x5E, 0x43, 0xAF}};
 
     t.src = mac1;
     t.dest = mac2;
 
     //Envoyer trame
-    transmettreTrame(&g, &t, 1, 0);
+    transmettreTrame(&g, &t, 7, 1);
+
+    printf("################\n");
+
+    t.src = mac2;
+    t.dest = mac1;
+    transmettreTrame(&g, &t, 14, 6);
+
 
     // Affichage
     //affiche_trame(&t);

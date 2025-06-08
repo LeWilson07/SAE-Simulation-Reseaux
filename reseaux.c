@@ -279,6 +279,7 @@ int indexEquipmentNumPort(Switch const *sw, uint8_t numPort){
 
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant){
     Equipement* e = &g->equipements[indexCourant];
+    printf("%d\n",indexCourant);
     // Vérifier si l'adresse MAC Courant est celle de destination
     if (comparer_mac(&e->mac,&tr->dest) == 0) {
         printf("\033[1;31mLa trame est arrivé à destination\033[0m\n") ;
@@ -307,7 +308,7 @@ void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant
             for (size_t i = 0; i < e->sw.nb_port; i++)
             {
                 int indexEqTransmission = e->sw.ports[i].indexEquipement;
-                if (indexEqTransmission != 0 && indexEqTransmission != indexSrc) {
+                if (indexEqTransmission != -1 && indexEqTransmission != indexSrc) {
                     transmettreTrame(g,tr,e->index,indexEqTransmission);
                 }   
             }
