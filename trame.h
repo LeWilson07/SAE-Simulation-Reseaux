@@ -7,6 +7,7 @@
 // Structure de la tram
 typedef struct Trame{
     uint8_t preambule[7];
+    uint8_t sfd;
     mac_addr_t dest;
     mac_addr_t src;
     uint8_t type[2];
