@@ -254,6 +254,12 @@ void afficherMatriceAdja(Graphe const *g){
 
 int adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac){
     //Retourne l'index si elle existe sinon -1
+    for (int i = 0; i < sw->nb_commu; ++i) {
+        if (comparer_mac(&sw->tableCommu[i].adresse_mac, mac) == 0) {
+            return i; // Adresse trouvée, on retourne son index
+        }
+    }
+    return -1; // Adresse non trouvée
 }
 
 uint8_t numPortIndexEquipment(Switch const *sw, int index){

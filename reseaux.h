@@ -1,8 +1,7 @@
-#pragma once 
+#pragma once
 
 #include "adresse.h"
 #include "trame.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
