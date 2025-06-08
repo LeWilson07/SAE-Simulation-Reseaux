@@ -87,4 +87,6 @@ void afficherEquipement(Equipement const *e,int const index);
 void afficherGraphe(Graphe const *g);
 void afficherMatriceAdja(Graphe const *g);
 int  adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac);
+uint8_t numPortIndexEquipment(Switch const *sw, int index);
+int indexEquipmentNumPort(Switch const *sw, uint8_t numPort);
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant);

@@ -141,7 +141,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
         "Erreur dans la lecture du nombre de la priorité\n");
         //Allocation de la table de commutation
         e.sw.nb_commu = 0;
-        e.sw.commu_capacite = 4; //Valeur par défaut
+        e.sw.commu_capacite = NOMBRE_COMMUTATION_DEFAUT; //Valeur par défaut
         CHKNULL(e.sw.tableCommu = calloc(NOMBRE_COMMUTATION_DEFAUT, \
             sizeof(Commutation)));
         //Allocation de tous les ports du switch
@@ -172,6 +172,7 @@ void ajouterCommutation(Switch *sw,  mac_addr_t const *mac, uint8_t indexPort){
     //Enregistrement de la commutation
     (sw->tableCommu + sw->nb_commu)->port = indexPort;
     (sw->tableCommu + sw->nb_commu)->adresse_mac = *mac;
+    sw->nb_commu++;
 }
 
 void afficherPortSwitch(Switch const *sw){
@@ -186,13 +187,13 @@ void afficherPortSwitch(Switch const *sw){
 }
 
 void afficherTableCommutation(Switch const *sw) {
-    //S'occupe de l'affichage d'une table de commutation
+    // S'occupe de l'affichage d'une table de commutation
     printf("Table de commutation (%d entrées) :\n", sw->nb_commu);
     printf("----------------------------------\n");
-    for (int i = 0; i < sw->nb_commu; ++i) {
+    for (int i = 0; i < sw->nb_commu; i++) {
         printf("MAC : ");
-        affiche_mac(&sw->tableCommu->adresse_mac); //Régler le +i car affiche tjr la même
-        printf(" → Port : %d\n", sw->tableCommu->port);
+        affiche_mac(&sw->tableCommu[i].adresse_mac);
+        printf(" → Port : %d\n", sw->tableCommu[i].port);
     }
     printf("----------------------------------\n");
 }
@@ -277,36 +278,37 @@ int indexEquipmentNumPort(Switch const *sw, uint8_t numPort){
 }
 
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant){
-    Equipement e = g->equipements[indexCourant];
+    Equipement* e = &g->equipements[indexCourant];
     // Vérifier si l'adresse MAC Courant est celle de destination
-    if (comparer_mac(&e.mac,&tr->dest) == 0) {
-        printf("La trame est arrivé à destination");
+    if (comparer_mac(&e->mac,&tr->dest) == 0) {
+        printf("\033[1;31mLa trame est arrivé à destination\033[0m\n") ;
         return;
     }
     // On se prépare à transmettre (Si c'est un switch)
-    if (e.type == SWITCH_TYPE)
+    if (e->type == SWITCH_TYPE)
     {
+        
         //On récupère le port d'arriver
-        uint8_t num = numPortIndexEquipment(&e.sw,indexSrc);
+        uint8_t num = numPortIndexEquipment(&e->sw,indexSrc);
         //On sauvegarde l'adresse MAC source si elle n'est pas connue dans la table de commutation
-        if (adresseDansTabCommu(&e.sw,&tr->src) == -1) {
+        if (adresseDansTabCommu(&e->sw,&tr->src) == -1) {
             //On ajout l'adresse dans la table de commu
-            ajouterCommutation(&e.sw,&tr->src,num);
+            ajouterCommutation(&e->sw,&tr->src,num);
         }
         //On regarde si la destination est connue pour transmettre
-        int indexPortDest = adresseDansTabCommu(&e.sw,&tr->dest);
+        int indexPortDest = adresseDansTabCommu(&e->sw,&tr->dest);
         if (indexPortDest != -1) {
             //On transmet à la machine sur le bon port
-            uint8_t numPortDest = e.sw.tableCommu[indexPortDest].port;
-            transmettreTrame(g,tr,e.index,indexEquipmentNumPort(&e.sw,numPortDest));
+            uint8_t numPortDest = e->sw.tableCommu[indexPortDest].port;
+            transmettreTrame(g,tr,e->index,indexEquipmentNumPort(&e->sw,numPortDest));
         }
         else {
             //Sinon Broadcast sur tout les ports excepté celui d'arrivé
-            for (size_t i = 0; i < e.sw.nb_port; i++)
+            for (size_t i = 0; i < e->sw.nb_port; i++)
             {
-                int indexEqTransmission = e.sw.ports[i].indexEquipement;
+                int indexEqTransmission = e->sw.ports[i].indexEquipement;
                 if (indexEqTransmission != 0 && indexEqTransmission != indexSrc) {
-                    transmettreTrame(g,tr,e.index,indexEqTransmission);
+                    transmettreTrame(g,tr,e->index,indexEqTransmission);
                 }   
             }
         }  
