@@ -1,7 +1,6 @@
 #pragma once
 
 #include "adresse.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -36,6 +35,7 @@ typedef struct {
 typedef struct{
     uint8_t port;
     mac_addr_t adresse_mac;
+    // mettre un enume bloqué, designer et racine
 
 }Commutation;
 
