@@ -30,11 +30,23 @@
     } \
 } while(0)
 
+typedef enum {
+    RACINE,
+    DESGIGNE,
+    BLOQUE
+} EtatPort;
+
+typedef struct {
+    int RootID;
+    int cout;
+    mac_addr_t mac;
+} BPDU;
+
+
 typedef struct {
     uint8_t num;
     int indexEquipement;
 } Port;
-
 
 typedef struct {
     ip_addr_t ip;
