@@ -13,6 +13,7 @@
 int main() {
     
     Graphe g;
+
     construireReseau("mylan_no_cycle.lan",&g);
 >>>>>>> 87a8be8ab13956f037ca72bfcc0bf519683e1a75
 
