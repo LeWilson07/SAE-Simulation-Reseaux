@@ -6,9 +6,8 @@
 int main() {
     
     Graphe g;
-    //construireReseau("mylan_no_cycle.lan",&g);
+
     construireReseau("mylan_no_cycle.lan",&g);
-    
 
     //mac_addr_t mac1 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x01}}, mac2 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x02}};
 
