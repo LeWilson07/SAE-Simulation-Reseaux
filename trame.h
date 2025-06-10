@@ -18,6 +18,6 @@ typedef struct Trame{
 
 void affiche_trame(Trame const *tr);
 void liberer_trame(Trame *tr);
-void calculer_fcs(const uint8_t *data, size_t taille);
+uint32_t calculer_fcs(const uint8_t *data, size_t taille);
 int generer_fcs(Trame *tr);
 

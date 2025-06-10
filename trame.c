@@ -37,24 +37,22 @@ void liberer_trame(Trame *tr){
     free(tr->data);
 }
 
-void calculer_fcs(const uint8_t *data, size_t taille)
-{
-    //pour l'algorithme jme suis basé sur la page wikipedia anglaise "Ethernet Frame", plus simplement le CRC32
-    uint32_t calculer_fcs(const uint8_t *data, size_t taille) {
-    uint32_t crc = 0xFFFFFFFF; // Valeur initiale du CRC
+uint32_t calculer_fcs(const uint8_t *data, size_t taille) {
+    //Pour l'algorithme jme suis basé sur la page wikipedia eng "Ethernet Frame" 
+    uint32_t crc = 0xFFFFFFFF;
     for (size_t i = 0; i < taille; i++) {
         uint8_t byte = data[i];
         crc ^= byte;
         for (int j = 0; j < 8; j++) {
             if (crc & 1) {
-                crc = (crc >> 1) ^ 0xEDB88320; // Polynôme CRC32 standard
+                crc = (crc >> 1) ^ 0xEDB88320;
             } else {
                 crc >>= 1;
             }
         }
     }
-    return ~crc; // Complément à un du CRC
-    }
+    return ~crc;
+}
     
 int generer_fcs(Trame *tr) {
     if (tr == NULL) {
@@ -103,4 +101,4 @@ int generer_fcs(Trame *tr) {
 
     return 0; // Indique le succès
 }   
-}
+
