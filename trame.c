@@ -32,6 +32,24 @@ void affiche_trame(Trame const *tr){
     printf("FCS           : ");
     affiche_octets(tr->fcs, 4);
 }
+void Lire_Message_Trame(Trame const *tr){
+    //permet de lire le message d'une trame
+    printf("Données (Message) : ");
+    if (tr->data != NULL && tr->tailleData > 0) {
+        // Ajout d’un caractère nul pour imprimer en tant que chaîne
+        char *message = malloc(tr->tailleData + 1);
+        if (message == NULL) {
+            printf("Erreur d'allocation mémoire pour le message.\n");
+            return;
+        }
+        memcpy(message, tr->data, tr->tailleData);
+        message[tr->tailleData] = '\0';
+        printf("%s\n", message);
+        free(message);
+    } else {
+        printf("(aucune donnée)\n");
+    }
+}
 
 void liberer_trame(Trame *tr){
     free(tr->data);

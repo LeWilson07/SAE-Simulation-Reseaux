@@ -16,5 +16,6 @@ typedef struct Trame{
     uint16_t tailleData;
 }Trame;
 
+void Lire_Message_Trame(Trame const *tr);
 void affiche_trame(Trame const *tr);
 void liberer_trame(Trame *tr);
