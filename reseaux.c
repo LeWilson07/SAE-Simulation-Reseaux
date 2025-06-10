@@ -9,7 +9,7 @@ void construireReseau(char const *path, Graphe *g) {
     CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture de la première ligne
     //Affectaion du nombre d'équipement et de lien
     CHKSSCANF(sscanf(bufferLigne, "%d %d", &nbEquipement, &nbLiens), 2, \
-        "Erreur : Nb de Equipement ou Nb de Lien");
+        "Erreur : Nb de Equipement ou Nb de Lien\n");
     //Vérification de la cohérence des valeurs
     if(nbEquipement <= 0 || nbLiens <= 0) {
         printf("Erreur : Le nombre d'équipements et liens "
@@ -54,21 +54,22 @@ void construireReseau(char const *path, Graphe *g) {
 
 void construirePort(Graphe *g, int s1, int s2){
     //On va mettre sur le premier port disponible de l'équipement l'index l'autre.
-    Equipement e = g->equipements[s1];
-    switch (e.type)
+    Equipement *e = &g->equipements[s1];
+    switch (e->type)
     {
     case STATION_TYPE:
-        if (e.station.port.indexEquipement == -1)
-            e.station.port.indexEquipement = s2;
+        if (e->station.port.indexEquipement == -1){
+            e->station.port.indexEquipement = s2;
+        }
         else printf("L'équipement %d n'a pas assez "
             "de port pour cette configuration\n", s1);
         break;
 
     case SWITCH_TYPE:
         int i = 0;
-        while (i < e.sw.nb_port && e.sw.ports[i].indexEquipement != -1) i++;
-        if(i < e.sw.nb_port)
-            e.sw.ports[i].indexEquipement = s2;
+        while (i < e->sw.nb_port && e->sw.ports[i].indexEquipement != -1) i++;
+        if(i < e->sw.nb_port)
+            e->sw.ports[i].indexEquipement = s2;
         else printf("L'équipement %d n'a pas assez "
             "de port pour cette configuration\n", s1);
         break;
@@ -205,11 +206,12 @@ void afficherEquipement(Equipement const *e, int const index) {
     {
     case STATION_TYPE:
         printf("Station\n");
-        printf("  MAC : ");
+        printf("  MAC  : ");
         affiche_mac(&e->mac);
-        printf("\n  IP  : ");
+        printf("\n  IP   : ");
         affiche_ip(&e->station.ip);
-        printf("\n");
+        printf("\n  Port : ");
+        printf("%d\n", e->station.port.indexEquipement);
         break;
 
     case SWITCH_TYPE:
@@ -307,10 +309,51 @@ void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant
             for (size_t i = 0; i < e->sw.nb_port; i++)
             {
                 int indexEqTransmission = e->sw.ports[i].indexEquipement;
-                if (indexEqTransmission != 0 && indexEqTransmission != indexSrc) {
+                if (indexEqTransmission != -1 && indexEqTransmission != indexSrc) {
                     transmettreTrame(g,tr,e->index,indexEqTransmission);
                 }   
             }
         }  
     }  
+}
+
+void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest){
+    if (g->equipements[stationSrc].type != STATION_TYPE){
+        printf("L'équipement source n'est pas une sation !\n");
+        return;
+    }
+    
+    if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
+        printf("La station n'existe pas");
+        return;
+    }
+
+    t->src = g->equipements[stationSrc].mac;
+    t->dest = g->equipements[stationDest].mac;
+
+    // Remplir le préambule avec une valeur fixe
+    for (int i = 0; i < 7; i++) {
+        t->preambule[i] = 0xAA;
+    }
+    t->sfd = 0xAB;
+
+    // Type arbitraire (ARP)
+    t->type[0] = 0x08;
+    t->type[1] = 0x06;
+
+    // Données : chaîne de texte transformée en octets
+    const char* message = "J'aime les bateaux";
+    t->tailleData = strlen(message);
+    t->data = malloc(t->tailleData);
+    memcpy(t->data, message, t->tailleData);
+
+    // FCS arbitraire
+    t->fcs[0] = 0xDE;
+    t->fcs[1] = 0xAD;
+    t->fcs[2] = 0xBE;
+    t->fcs[3] = 0xEF; 
+    
+    //Transmission de la trame
+    int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
+    transmettreTrame(g,t,stationSrc,indexEquipPort);
 }

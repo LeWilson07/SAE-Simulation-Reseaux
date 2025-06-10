@@ -30,11 +30,23 @@
     } \
 } while(0)
 
+typedef enum {
+    RACINE,
+    DESGIGNE,
+    BLOQUE
+} EtatPort;
+
+typedef struct {
+    int RootID;
+    int cout;
+    mac_addr_t mac;
+} BPDU;
+
+
 typedef struct {
     uint8_t num;
     int indexEquipement;
 } Port;
-
 
 typedef struct {
     ip_addr_t ip;
@@ -90,3 +102,4 @@ int  adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac);
 uint8_t numPortIndexEquipment(Switch const *sw, int index);
 int indexEquipmentNumPort(Switch const *sw, uint8_t numPort);
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant);
+void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest);
