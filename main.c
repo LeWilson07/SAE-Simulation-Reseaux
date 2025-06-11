@@ -20,8 +20,7 @@
         t.tailleData = strlen(message);
         t.data = malloc(t.tailleData);
         memcpy(t.data, message, t.tailleData);
-        free(t.data);
-        t.data = NULL;
+
 
         Lire_Message_Trame(&t);
         envoyerMessage(&g,&t,7,14);

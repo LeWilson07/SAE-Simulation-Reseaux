@@ -344,53 +344,34 @@ void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant
 }
 
 void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest){
-    if (g->equipements[stationSrc].type != STATION_TYPE){
-        printf("L'équipement source n'est pas une sation !\n");
+    if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
+        printf("La station n'existe pas\n");
         return;
     }
-    
-    if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
-        printf("La station n'existe pas");
+
+    if (g->equipements[stationSrc].type != STATION_TYPE){
+        printf("L'équipement source n'est pas une station !\n");
         return;
     }
 
     t->src = g->equipements[stationSrc].mac;
     t->dest = g->equipements[stationDest].mac;
 
-    // Remplir le préambule avec une valeur fixe
     for (int i = 0; i < 7; i++) {
         t->preambule[i] = 0xAA;
     }
     t->sfd = 0xAB;
 
-    // Type arbitraire (ARP)
     t->type[0] = 0x08;
     t->type[1] = 0x06;
 
-    // Données : chaîne de texte transformée en octets
-    const char* message = "J'aime les bateaux";
-    t->tailleData = strlen(message);
-    t->data = malloc(t->tailleData);
-    memcpy(t->data, message, t->tailleData);
-    if (t->data == NULL) {
-        perror("Erreur d'allocation mémoire pour les données");
-        return;
-    }
-    
-    memcpy(t->data, message, t->tailleData);
-
-    // FCS arbitraire
     t->fcs[0] = 0xDE;
     t->fcs[1] = 0xAD;
     t->fcs[2] = 0xBE;
-    t->fcs[3] = 0xEF; 
-    
-    //Transmission de la trame
-    int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
-    transmettreTrame(g,t,stationSrc,indexEquipPort);
+    t->fcs[3] = 0xEF;
 
-    free(t->data);
-    t->data = NULL;
+    int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
+    transmettreTrame(g, t, stationSrc, indexEquipPort);
 }
 
 void transmettreBPDU(Graphe *g, int indexSrc, int indexDest, BPDU bpdu){
