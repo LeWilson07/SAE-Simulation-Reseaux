@@ -372,6 +372,12 @@ void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest){
     t->tailleData = strlen(message);
     t->data = malloc(t->tailleData);
     memcpy(t->data, message, t->tailleData);
+    if (t->data == NULL) {
+        perror("Erreur d'allocation mémoire pour les données");
+        return;
+    }
+    
+    memcpy(t->data, message, t->tailleData);
 
     // FCS arbitraire
     t->fcs[0] = 0xDE;
@@ -382,6 +388,9 @@ void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest){
     //Transmission de la trame
     int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
     transmettreTrame(g,t,stationSrc,indexEquipPort);
+
+    free(t->data);
+    t->data = NULL;
 }
 
 void transmettreBPDU(Graphe *g, int indexSrc, int indexDest, BPDU bpdu){
