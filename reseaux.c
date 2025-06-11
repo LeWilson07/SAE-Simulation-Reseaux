@@ -395,11 +395,13 @@ void transmettreBPDU(Graphe *g, int indexSrc, int indexDest, BPDU bpdu){
 int comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
 {
     int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
-    if (cmp != 0) return cmp;
+    if (cmp != 0){
+        return cmp;
+    } 
 
-    if (bpdu1.cout != bpdu2.cout)
+    if (bpdu1.cout != bpdu2.cout){
         return (bpdu1.cout < bpdu2.cout) ? -1 : 1;
-
+    }
     return comparer_mac(&bpdu1.mac, &bpdu2.mac);
 }
 
