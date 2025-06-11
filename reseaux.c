@@ -279,6 +279,8 @@ void afficherMatriceAdja(Graphe const *g){
     }
 }
 
+
+
 int adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac){
     //Retourne l'index si elle existe sinon -1
     for (size_t i = 0; i < sw->nb_commu; i++) {
@@ -388,6 +390,24 @@ void transmettreBPDU(Graphe *g, int indexSrc, int indexDest, BPDU bpdu){
         uint8_t num = numPortIndexEquipment(&e->sw,indexSrc);
         e->sw.ports[num-1].bpdu = bpdu;
     }
+}
+
+int comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
+{
+    int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
+    if (cmp < 0) return -1; // bpdu1 meilleur
+    if (cmp > 0) return 1;  // bpdu2 meilleur
+
+    //Alors on compare plutot le cout
+    if (bpdu1.cout < bpdu2.cout) return -1;
+    if (bpdu1.cout > bpdu2.cout) return 1;
+
+    // Si coûts identiques, comparer MAC de l'émetteur 
+    cmp = comparer_mac(&bpdu1.mac, &bpdu2.mac);
+    if (cmp < 0) return -1;
+    if (cmp > 0) return 1;
+
+    return 0; // Les deux BPDUs sont équivalents
 }
 
 void setupSTP(Graphe *g){

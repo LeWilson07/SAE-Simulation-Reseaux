@@ -106,3 +106,4 @@ uint8_t numPortIndexEquipment(Switch const *sw, int index);
 int indexEquipmentNumPort(Switch const *sw, uint8_t numPort);
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant);
 void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest);
+int comparer_BPDU(BPDU bdpu1, BPDU bpdu2);
