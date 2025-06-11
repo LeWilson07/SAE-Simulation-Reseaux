@@ -37,7 +37,7 @@ typedef enum {
 } EtatPort;
 
 typedef struct {
-    int RootID;
+    mac_addr_t RootID;
     int cout;
     mac_addr_t mac;
 } BPDU;
@@ -46,6 +46,8 @@ typedef struct {
 typedef struct {
     uint8_t num;
     int indexEquipement;
+    EtatPort etat;
+    BPDU bpdu;
 } Port;
 
 typedef struct {
@@ -65,6 +67,7 @@ typedef struct{
     uint16_t commu_capacite;
     uint16_t nb_commu; 
     Commutation* tableCommu;
+    BPDU meilleur_bpdu;
 }Switch;
 
 typedef enum {

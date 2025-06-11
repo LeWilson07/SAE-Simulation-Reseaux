@@ -381,3 +381,56 @@ void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest){
     int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
     transmettreTrame(g,t,stationSrc,indexEquipPort);
 }
+
+void transmettreBPDU(Graphe *g, int indexSrc, int indexDest, BPDU bpdu){
+    Equipement* e = &g->equipements[indexDest];
+    if (e->type == SWITCH_TYPE){
+        uint8_t num = numPortIndexEquipment(&e->sw,indexSrc);
+        e->sw.ports[num-1].bpdu = bpdu;
+    }
+}
+
+void setupSTP(Graphe *g){
+    //Initialisation du protocole STP (Création et envoie des BPDU par chaque Switch)
+    for (size_t i = 0; i < g->nb_equipements; i++){
+        Equipement *e = &g->equipements[i];
+        if (e->type == SWITCH_TYPE){
+            //BPDU par défaut (Chaque Switch se croit racine)
+            e->sw.meilleur_bpdu.RootID = e->mac;
+            e->sw.meilleur_bpdu.cout;
+            e->sw.meilleur_bpdu.mac = e->mac;
+            //Puis envoi son BPDU sur tout les ports
+            for (size_t i = 0; i < e->sw.nb_port; i++)
+            {
+                if (e->sw.ports[i].indexEquipement != -1){
+                    transmettreBPDU(g,e->index,e->sw.ports[i].indexEquipement, e->sw.meilleur_bpdu);
+                }
+            }
+        }
+    }
+    //Trouver la convergence de l'arbre STP
+    char changement;
+    do
+    {
+        changement = 0;
+        for (size_t i = 0; i < g->nb_equipements; i++) //Ajouter un Macro Sympa style foreach
+        {
+            Equipement e = g->equipements[i];
+            if (e.type == SWITCH_TYPE)
+            {
+                
+            }
+            
+        }
+        //Mise à jour des ports des switch
+        for (size_t i = 0; i < g->nb_equipements; i++)
+        {
+            Equipement e = g->equipements[i];
+            if (e.type == SWITCH_TYPE)
+            {
+                /* code */
+            }
+            
+        }
+    } while (changement);
+}
