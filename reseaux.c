@@ -395,20 +395,14 @@ void transmettreBPDU(Graphe *g, int indexSrc, int indexDest, BPDU bpdu){
 int comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
 {
     int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
-    if (cmp < 0) return -1; // bpdu1 meilleur
-    if (cmp > 0) return 1;  // bpdu2 meilleur
+    if (cmp != 0) return cmp;
 
-    //Alors on compare plutot le cout
-    if (bpdu1.cout < bpdu2.cout) return -1;
-    if (bpdu1.cout > bpdu2.cout) return 1;
+    if (bpdu1.cout != bpdu2.cout)
+        return (bpdu1.cout < bpdu2.cout) ? -1 : 1;
 
-    // Si coûts identiques, comparer MAC de l'émetteur 
-    cmp = comparer_mac(&bpdu1.mac, &bpdu2.mac);
-    if (cmp < 0) return -1;
-    if (cmp > 0) return 1;
-
-    return 0; // Les deux BPDUs sont équivalents
+    return comparer_mac(&bpdu1.mac, &bpdu2.mac);
 }
+
 
 void setupSTP(Graphe *g){
     //Initialisation du protocole STP (Création et envoie des BPDU par chaque Switch)
