@@ -344,7 +344,8 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
     }  
 }
 
-void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest){
+
+void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest, const char* message){
     if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
         printf("La station n'existe pas\n");
         return;
@@ -366,6 +367,13 @@ void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest){
     t->type[0] = 0x08;
     t->type[1] = 0x06;
 
+
+    // Données : chaîne de texte transformée en octets
+    t->tailleData = strlen(message);
+    t->data = malloc(t->tailleData);
+    memcpy(t->data, message, t->tailleData);
+
+    // FCS arbitraire
     t->fcs[0] = 0xDE;
     t->fcs[1] = 0xAD;
     t->fcs[2] = 0xBE;
