@@ -52,7 +52,9 @@ void Lire_Message_Trame(Trame const *tr){
 }
 
 void liberer_trame(Trame *tr){
-    free(tr->data);
+    if(tr->data != NULL){
+        free(tr->data);
+    }
 }
 
 uint32_t calculer_fcs(const uint8_t *data, size_t taille) {

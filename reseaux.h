@@ -37,7 +37,7 @@ typedef enum {
 } EtatPort;
 
 typedef struct {
-    int RootID;
+    mac_addr_t RootID;
     int cout;
     mac_addr_t mac;
 } BPDU;
@@ -46,6 +46,8 @@ typedef struct {
 typedef struct {
     uint8_t num;
     int indexEquipement;
+    EtatPort etat;
+    BPDU bpdu;
 } Port;
 
 typedef struct {
@@ -65,6 +67,7 @@ typedef struct{
     uint16_t commu_capacite;
     uint16_t nb_commu; 
     Commutation* tableCommu;
+    BPDU meilleur_bpdu;
 }Switch;
 
 typedef enum {
@@ -103,3 +106,4 @@ uint8_t numPortIndexEquipment(Switch const *sw, int index);
 int indexEquipmentNumPort(Switch const *sw, uint8_t numPort);
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant);
 void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest, const char* message);
+int comparer_BPDU(BPDU bdpu1, BPDU bpdu2);

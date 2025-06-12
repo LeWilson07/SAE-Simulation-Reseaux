@@ -84,7 +84,7 @@
                 scanf("%s", &message);
                 envoyerMessage(&g, &t, stationSrc, stationDest, &message);
                 Lire_Message_Trame(&t);
-                liberer_trame(&t);
+                //liberer_trame(&t);
                 break;
 
             default:

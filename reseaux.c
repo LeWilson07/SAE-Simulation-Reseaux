@@ -279,6 +279,8 @@ void afficherMatriceAdja(Graphe const *g){
     }
 }
 
+
+
 int adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac){
     //Retourne l'index si elle existe sinon -1
     for (size_t i = 0; i < sw->nb_commu; i++) {
@@ -341,29 +343,29 @@ void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant
     }  
 }
 
+
 void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest, const char* message){
-    if (g->equipements[stationSrc].type != STATION_TYPE){
-        printf("L'équipement source n'est pas une sation !\n");
+    if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
+        printf("La station n'existe pas\n");
         return;
     }
-    
-    if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
-        printf("La station n'existe pas");
+
+    if (g->equipements[stationSrc].type != STATION_TYPE){
+        printf("L'équipement source n'est pas une station !\n");
         return;
     }
 
     t->src = g->equipements[stationSrc].mac;
     t->dest = g->equipements[stationDest].mac;
 
-    // Remplir le préambule avec une valeur fixe
     for (int i = 0; i < 7; i++) {
         t->preambule[i] = 0xAA;
     }
     t->sfd = 0xAB;
 
-    // Type arbitraire (ARP)
     t->type[0] = 0x08;
     t->type[1] = 0x06;
+
 
     // Données : chaîne de texte transformée en octets
     t->tailleData = strlen(message);
@@ -374,9 +376,75 @@ void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest, const 
     t->fcs[0] = 0xDE;
     t->fcs[1] = 0xAD;
     t->fcs[2] = 0xBE;
-    t->fcs[3] = 0xEF; 
-    
-    //Transmission de la trame
+    t->fcs[3] = 0xEF;
+
     int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
-    transmettreTrame(g,t,stationSrc,indexEquipPort);
+    transmettreTrame(g, t, stationSrc, indexEquipPort);
+}
+
+void transmettreBPDU(Graphe *g, int indexSrc, int indexDest, BPDU bpdu){
+    Equipement* e = &g->equipements[indexDest];
+    if (e->type == SWITCH_TYPE){
+        uint8_t num = numPortIndexEquipment(&e->sw,indexSrc);
+        e->sw.ports[num-1].bpdu = bpdu;
+    }
+}
+
+int comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
+{
+    int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
+    if (cmp != 0){
+        return cmp;
+    } 
+
+    if (bpdu1.cout != bpdu2.cout){
+        return (bpdu1.cout < bpdu2.cout) ? -1 : 1;
+    }
+    return comparer_mac(&bpdu1.mac, &bpdu2.mac);
+}
+
+
+void setupSTP(Graphe *g){
+    //Initialisation du protocole STP (Création et envoie des BPDU par chaque Switch)
+    for (size_t i = 0; i < g->nb_equipements; i++){
+        Equipement *e = &g->equipements[i];
+        if (e->type == SWITCH_TYPE){
+            //BPDU par défaut (Chaque Switch se croit racine)
+            e->sw.meilleur_bpdu.RootID = e->mac;
+            e->sw.meilleur_bpdu.cout;
+            e->sw.meilleur_bpdu.mac = e->mac;
+            //Puis envoi son BPDU sur tout les ports
+            for (size_t i = 0; i < e->sw.nb_port; i++)
+            {
+                if (e->sw.ports[i].indexEquipement != -1){
+                    transmettreBPDU(g,e->index,e->sw.ports[i].indexEquipement, e->sw.meilleur_bpdu);
+                }
+            }
+        }
+    }
+    //Trouver la convergence de l'arbre STP
+    char changement;
+    do
+    {
+        changement = 0;
+        for (size_t i = 0; i < g->nb_equipements; i++) //Ajouter un Macro Sympa style foreach
+        {
+            Equipement e = g->equipements[i];
+            if (e.type == SWITCH_TYPE)
+            {
+                
+            }
+            
+        }
+        //Mise à jour des ports des switch
+        for (size_t i = 0; i < g->nb_equipements; i++)
+        {
+            Equipement e = g->equipements[i];
+            if (e.type == SWITCH_TYPE)
+            {
+                /* code */
+            }
+            
+        }
+    } while (changement);
 }
