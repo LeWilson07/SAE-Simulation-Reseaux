@@ -1,13 +1,13 @@
-    #include "trame.h"
-    #include "adresse.h"
-    #include "reseaux.h"
+#include "trame.h"
+#include "adresse.h"
+#include "reseaux.h"
 
 
 int main() {
     
     Graphe g;
-    construireReseau("mylan_no_cycle.lan",&g);
-    
+    construireReseau("mylan.lan",&g);
+    setupSTPBis(&g);
     //mac_addr_t mac1 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x01}}, mac2 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x02}};
     //printf("Affiche (size_t)-1 :  %ld", comparer_mac(&mac1,&mac2));
     //printf("Affiche  0 :  %ld", comparer_mac(&mac2,&mac2));
@@ -75,7 +75,7 @@ int main() {
                 printf("A quelle machine souhaitez vous envoyer votre message ? (0 à %ld) : ", g.nb_equipements - 1);
                 CHKSSCANF(scanf("%ld", &stationDest),1,"Erreur de lecture");
                 printf("Quel message souhaitez vous envoyer ?");
-                CHKSSCANF(scanf("%s", message),1,"Erreur de lecture");
+                CHKSSCANF(scanf("%255s", message),1,"Erreur de lecture");
                 envoyerMessage(&g, &t, stationSrc, stationDest, message);
                 Lire_Message_Trame(&t);
                 //liberer_trame(&t);
@@ -88,5 +88,3 @@ int main() {
     }
     return 0;
 }
-
-

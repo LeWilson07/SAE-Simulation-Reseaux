@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #define NOMBRE_COMMUTATION_DEFAUT 4
 
@@ -31,10 +32,10 @@
 } while(0)
 
 typedef enum {
-    RACINE,
     DESGIGNE,
+    RACINE,
     BLOQUE
-} EtatPort;
+} RolePort;
 
 typedef struct {
     mac_addr_t RootID;
@@ -46,7 +47,7 @@ typedef struct {
 typedef struct {
     size_t num;
     size_t indexEquipement;
-    EtatPort etat;
+    RolePort role;
     BPDU bpdu;
 } Port;
 
@@ -106,3 +107,4 @@ size_t numPortIndexEquipment(Switch const *sw, size_t index);
 size_t indexEquipmentNumPort(Switch const *sw, size_t numPort);
 void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, int PTL);
 void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest, const char* message);
+void setupSTPBis(Graphe *g);

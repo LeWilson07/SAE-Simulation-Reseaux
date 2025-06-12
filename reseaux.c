@@ -177,7 +177,7 @@ void ajouterCommutation(Switch *sw,  mac_addr_t const *mac, size_t indexPort){
 
 void afficherPortSwitch(Switch const *sw){
     printf("\e[32m├─────────────────────────────────────┤\e[0m\n");
-    printf("\e[32m│\e[0m           \e[35mEtat des ports\e[0m            \e[32m│\e[0m\n");
+    printf("\e[32m│\e[0m       \e[35mMachine derrière ports\e[0m        \e[32m│\e[0m\n");
     printf("\e[32m├─────────────────────────────────────┤\e[0m\n");
 
     for (size_t i = 0; i < sw->nb_port; i++)
@@ -186,10 +186,12 @@ void afficherPortSwitch(Switch const *sw){
         if(sw->ports[i].indexEquipement > 9){
             printf("\e[32m│\e[0m  \e[34mPort\e[0m : %ld → Machine : %ld            \e[32m│\e[0m\n", sw->ports[i].num, 
             sw->ports[i].indexEquipement);
+            //printf("\t\t%d\n", sw->ports[i].role);
         }
         else{
             printf("\e[32m│\e[0m  \e[34mPort\e[0m : %ld → Machine : %ld             \e[32m│\e[0m\n", sw->ports[i].num, 
             sw->ports[i].indexEquipement);
+            //printf("\t\t%d\n", sw->ports[i].role);
         }
         
     }
@@ -395,7 +397,7 @@ void transmettreBPDU(Graphe *g, size_t indexSrc, size_t indexDest, BPDU bpdu){
     }
 }
 
-int comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
+char comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
 {
     int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
     if (cmp != 0){
@@ -408,21 +410,177 @@ int comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
     return comparer_mac(&bpdu1.mac, &bpdu2.mac);
 }
 
-
-/**/
-char comparerBPDU(BPDU const bpdu1, BPDU const bpdu2){
-    //Retourne (size_t)-1 si bpdu1 est moins bon que bpdu sinon 1
-    //Pas besoins de traiter le cas égal car il n'existe pas
-    //Utiliser comparer mac
-    int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
-    if (cmp != 0){
-        return cmp;
-    } 
-
-    if (bpdu1.cout != bpdu2.cout){
-        return (bpdu1.cout < bpdu2.cout) ? -1 : 1;
+void visite_composante_connexe(Graphe *g, size_t s, bool *visite)
+{ 
+    *(visite+s) = true;
+    for (size_t i = 0; i < g->nb_equipements; i++)
+    {
+        if(! *(visite+i) && g->matrice_adjacence[s * g->nb_equipements + i] != UINT8_MAX){
+            visite_composante_connexe(g,i,visite);
+        }
     }
-    return comparer_mac(&bpdu1.mac, &bpdu2.mac);
+}
+
+bool sont_connectes(Graphe *g, size_t s1, size_t s2)
+{
+    bool res = false;
+    if (s1 < g->nb_equipements && s2 < g->nb_equipements)
+    {
+        bool *visite = calloc(g->nb_equipements, sizeof(bool));
+        if(visite == NULL){
+            exit(EXIT_FAILURE);
+        }
+        visite_composante_connexe(g,s1,visite);
+        res = *(visite + s2);
+        free(visite);
+    }
+    return res;
+}
+
+void setupSTPBis(Graphe *g){
+    size_t idRoot = 0;
+    //On part du principe que le premier switch est la racine car bato
+    size_t n = g->nb_equipements;
+    if(n <= 0) exit(EXIT_FAILURE);
+
+    // Initialisation des distances (+ infini)
+    int * distance_root = calloc(n, sizeof(int));
+    if (distance_root == NULL) return;
+    for (size_t i = 0; i < n; i++) 
+        distance_root[i] = INT_MAX;
+
+    // Tableau des prédécesseurs
+    size_t *tab_pred = calloc(n, sizeof(size_t));
+    if (tab_pred == NULL) {
+        return;
+    }
+
+    for (size_t i = 0; i < n; i++) 
+        tab_pred[i] = (size_t)-1;
+
+    // Tableau des fixés
+    char *tab_fix = calloc(n, sizeof(char));
+    if (tab_fix == NULL) {
+        return;
+    }
+
+    //On fixes tout les sommets hors de la composante
+    for (size_t i = 0; i < n; i++)
+    {
+        if(idRoot != i && !sont_connectes(g,idRoot,i)){
+            tab_fix[i] = 1;
+        }
+    }
+
+    // Initialisation de l'algorithme avec le sommet s
+    distance_root[idRoot] = 0.0;
+    tab_pred[idRoot] = idRoot;
+    tab_fix[idRoot] = 1; // Vrai
+    size_t u = idRoot;
+    char TousFixes = 0;
+
+    do {
+        // Action pour tous les sommets adjacents
+        for (size_t v = 0; v < n; v++) {
+            if (g->matrice_adjacence[u * g->nb_equipements + v] != UINT8_MAX) {
+                int poids = g->matrice_adjacence[u * g->nb_equipements + v];
+                if (poids + distance_root[u] < distance_root[v]) {
+                    distance_root[v] = poids + distance_root[u];
+                    tab_pred[v] = u;
+                }
+            }
+        }
+
+        // Choix du nouveau sommet
+        TousFixes = 1;
+        size_t i = 0;
+        while (i<n && TousFixes != 0)
+        {
+            if (tab_fix[i] == 0)
+            {
+                TousFixes = 0;
+            }
+            else i++;
+        }
+        if (TousFixes == 0)
+        {
+            int distMin = distance_root[i];
+            u = i;
+            for (size_t j = 0; j < n; j++)
+            {
+                if(tab_fix[j] == 0 && distMin > distance_root[j]){
+                    u = j;
+                    distMin = distance_root[j];
+                }
+            }
+            tab_fix[u] = 1;
+        }
+    
+        //printf("%d,%zu\n",TousFixes,u);
+    } while (!TousFixes);
+    // Mise en place des roles des ports
+    for (size_t i = 0; i < g->nb_equipements; i++){
+        Equipement *e = &g->equipements[i];
+        if (e->type == SWITCH_TYPE){
+            for (size_t i = 0; i < e->sw.nb_port; i++)
+            {
+                if (e->sw.ports[i].indexEquipement != (size_t)-1)
+                {
+                    size_t s = e->index;
+                    size_t v = e->sw.ports[i].indexEquipement;
+                    if (g->equipements[v].type == SWITCH_TYPE) {
+                        if (distance_root[s] < distance_root[v])
+                        {
+                            e->sw.ports[i].role = DESGIGNE;
+                        }
+                        else if (distance_root[s] > distance_root[v])
+                        {
+                            e->sw.ports[i].role = BLOQUE;
+                        }
+                        else
+                        {
+                            if (comparer_mac(&e->mac,&g->equipements[v].mac) == -1)
+                            {
+                                e->sw.ports[i].role = DESGIGNE;
+                            }
+                            else
+                            {
+                                e->sw.ports[i].role = BLOQUE;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        e->sw.ports[i].role = DESGIGNE;
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    //Mise en place des ports Racine
+    for (size_t i = 0; i < g->nb_equipements; i++){
+        Equipement *e = &g->equipements[i];
+        if (e->type == SWITCH_TYPE){
+            //if (tab_pred[i] != idRoot && tab_pred[i] != (size_t)-1)
+            if (tab_pred[i] != (size_t)-1)
+            {
+                int num = numPortIndexEquipment(&e->sw,tab_pred[i]);
+                e->sw.ports[num-1].role = RACINE;
+            }   
+        }
+    }
+    
+    
+
+    // Libération des tableaux
+    free(tab_pred);
+    free(tab_fix);
+    free(distance_root);
+    tab_pred = NULL;
+    tab_fix = NULL;
+    distance_root = NULL;
 }
 
 void setupSTP(Graphe *g){
@@ -455,12 +613,12 @@ void setupSTP(Graphe *g){
                 Switch * sw = &e->sw;
                 for (size_t i = 0; i < sw->nb_port; i++) //Enlever les ports avec de sations
                 {
-                    if (comparerBPDU(sw->meilleur_bpdu, sw->ports[i].bpdu) == -1){
+                    if (comparer_BPDU(sw->meilleur_bpdu, sw->ports[i].bpdu) == -1){
                         sw->meilleur_bpdu = sw->ports[i].bpdu;
                         changement = 1;
                         //Propager le changement
                         for (size_t i = 0; i < sw->nb_port; i++){
-                            if (sw->ports[i].indexEquipement != (size_t)-1){
+                            if (sw->ports[i].indexEquipement != (size_t)-1) {
                                 transmettreBPDU(g,e->index,e->sw.ports[i].indexEquipement, e->sw.meilleur_bpdu);
                             }
                         }
@@ -473,10 +631,41 @@ void setupSTP(Graphe *g){
         for (size_t i = 0; i < g->nb_equipements; i++)
         {
             Equipement *e = &g->equipements[i];
-            if (e->type == SWITCH_TYPE){
-                /* code */
-            }
-            
+            if (e->type == SWITCH_TYPE) {
+                //Vérifier si le switch est root
+                if (comparer_mac(&e->sw.meilleur_bpdu.RootID, &e->sw.meilleur_bpdu.mac) == 0) {
+                    for (size_t i = 0; i < e->sw.nb_port; i++) {
+                        e->sw.ports[i].role = DESGIGNE;
+                    }
+                } 
+                else
+                {
+                    //Sinon déter le port root
+                    size_t portMin = 0;
+                    BPDU bpduMin = e->sw.ports[0].bpdu;
+                    for (size_t i = 1; i < e->sw.nb_port; i++) {
+                        if (comparer_BPDU(bpduMin,e->sw.ports[i].bpdu) == 1){
+                            portMin = i;
+                            bpduMin = e->sw.ports[i].bpdu;
+                        }
+                    }
+                    e->sw.ports[portMin].role = RACINE;
+                    //pour chaque port P :
+                    for (size_t i = 1; i < e->sw.nb_port; i++) {
+                        if (i != portMin && e->sw.ports[i].indexEquipement != (size_t)-1){
+                            //si P est meilleur BPDU sur son segment :
+                            if (comparer_BPDU(e->sw.meilleur_bpdu,e->sw.ports[i].bpdu) == 1)
+                            {
+                                e->sw.ports[i].role = DESGIGNE; //P devient Designated
+                            }
+                            else //sinon :
+                            {
+                                e->sw.ports[i].role = BLOQUE; //P devient Blocked
+                            }
+                        }
+                    }   
+                }
+            }  
         }
     } while (changement);
 }
