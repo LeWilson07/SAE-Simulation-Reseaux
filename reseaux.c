@@ -311,6 +311,12 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
         return;
     }
     Equipement* e = &g->equipements[indexCourant];
+    if (e->type == SWITCH_TYPE){
+        printf("Switch : %ld\n",e->index);
+    }
+    else{
+        printf("Station : %ld\n",e->index);
+    }
     // Vérifier si l'adresse MAC Courant est celle de destination
     if (comparer_mac(&e->mac,&tr->dest) == 0) {
         printf("\033[1;31mLa trame est arrivé à destination\033[0m\n") ;
@@ -319,7 +325,7 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
     // On se prépare à transmettre (Si c'est un switch)
     if (e->type == SWITCH_TYPE)
     {
-        
+        printf("Switch : %ld\n",e->index);
         //On récupère le port d'arriver
         size_t num = numPortIndexEquipment(&e->sw,indexSrc);
         //On sauvegarde l'adresse MAC source si elle n'est pas connue dans la table de commutation
@@ -336,6 +342,7 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
         }
         else {
             //Sinon Broadcast sur tout les ports excepté celui d'arrivé
+
             for (size_t i = 0; i < e->sw.nb_port; i++)
             {
                 size_t indexEqTransmission = e->sw.ports[i].indexEquipement;
@@ -480,3 +487,5 @@ void setupSTP(Graphe *g){
         }
     } while (changement);
 }
+
+
