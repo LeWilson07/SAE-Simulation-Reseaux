@@ -414,10 +414,15 @@ char comparerBPDU(BPDU const bpdu1, BPDU const bpdu2){
     //Retourne (size_t)-1 si bpdu1 est moins bon que bpdu sinon 1
     //Pas besoins de traiter le cas égal car il n'existe pas
     //Utiliser comparer mac
-    (void)bpdu1;
-    (void)bpdu2;
-    // TODO: implement comparison
-    return 0;
+    int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
+    if (cmp != 0){
+        return cmp;
+    } 
+
+    if (bpdu1.cout != bpdu2.cout){
+        return (bpdu1.cout < bpdu2.cout) ? -1 : 1;
+    }
+    return comparer_mac(&bpdu1.mac, &bpdu2.mac);
 }
 
 void setupSTP(Graphe *g){
@@ -430,8 +435,7 @@ void setupSTP(Graphe *g){
             e->sw.meilleur_bpdu.cout = 0;
             e->sw.meilleur_bpdu.mac = e->mac;
             //Puis envoi son BPDU sur tout les ports
-            for (size_t i = 0; i < e->sw.nb_port; i++)
-            {
+            for (size_t i = 0; i < e->sw.nb_port; i++){
                 if (e->sw.ports[i].indexEquipement != (size_t)-1){
                     transmettreBPDU(g,e->index,e->sw.ports[i].indexEquipement, e->sw.meilleur_bpdu);
                 }
@@ -445,15 +449,21 @@ void setupSTP(Graphe *g){
         changement = 0;
         for (size_t i = 0; i < g->nb_equipements; i++) //Ajouter une Macro Sympa style foreach
         {
+            Equipement * e = &g->equipements[i];
             if (g->equipements[i].type == SWITCH_TYPE)
             {
-                Switch * sw = &g->equipements[i].sw;
+                Switch * sw = &e->sw;
                 for (size_t i = 0; i < sw->nb_port; i++) //Enlever les ports avec de sations
                 {
                     if (comparerBPDU(sw->meilleur_bpdu, sw->ports[i].bpdu) == -1){
                         sw->meilleur_bpdu = sw->ports[i].bpdu;
                         changement = 1;
-                        //Propager le changement ?
+                        //Propager le changement
+                        for (size_t i = 0; i < sw->nb_port; i++){
+                            if (sw->ports[i].indexEquipement != (size_t)-1){
+                                transmettreBPDU(g,e->index,e->sw.ports[i].indexEquipement, e->sw.meilleur_bpdu);
+                            }
+                        }
                     }
                     
                 }
@@ -463,8 +473,7 @@ void setupSTP(Graphe *g){
         for (size_t i = 0; i < g->nb_equipements; i++)
         {
             Equipement *e = &g->equipements[i];
-            if (e->type == SWITCH_TYPE)
-            {
+            if (e->type == SWITCH_TYPE){
                 /* code */
             }
             
