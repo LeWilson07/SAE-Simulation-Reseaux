@@ -69,7 +69,8 @@ int main() {
                 // envoyer une trame
                 size_t stationSrc = 0;
                 size_t stationDest = 0;
-                char *message = "";
+                char message[256];  // ou une taille suffisante selon tes besoins
+
                 printf("De quelle machine souhaitez vous envoyer un message ? (0 à %ld) : ", g.nb_equipements - 1);
                 CHKSSCANF(scanf("%ld", &stationSrc),1,"Erreur de lecture");
                 printf("A quelle machine souhaitez vous envoyer votre message ? (0 à %ld) : ", g.nb_equipements - 1);
