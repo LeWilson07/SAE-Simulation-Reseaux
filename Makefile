@@ -11,7 +11,8 @@ DEPS := $(OBJS:.o=.d)
 # Include = répertoire courant
 INC_FLAGS := -I.
 
-CFLAGS ?= $(INC_FLAGS) -MMD -MP -O3
+# Ajout de -Wall -Werror -Wextra
+CFLAGS ?= $(INC_FLAGS) -MMD -MP -O3 -Wall -Werror -Wextra
 
 # L'exécutable est dans le répertoire courant
 $(TARGET_EXEC): $(OBJS)

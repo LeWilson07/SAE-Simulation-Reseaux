@@ -11,9 +11,9 @@
 
         //mac_addr_t mac1 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x01}}, mac2 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x02}};
 
-        //printf("Affiche -1 : %d", comparer_mac(&mac1,&mac2));
-        //printf("Affiche  0 : %d", comparer_mac(&mac2,&mac2));
-        //printf("Affiche  1 : %d", comparer_mac(&mac2,&mac1));
+        //printf("Affiche (size_t)-1 :  %ld", comparer_mac(&mac1,&mac2));
+        //printf("Affiche  0 :  %ld", comparer_mac(&mac2,&mac2));
+        //printf("Affiche  1 :  %ld", comparer_mac(&mac2,&mac1));
 
         Trame t;
         char *message = "hello";

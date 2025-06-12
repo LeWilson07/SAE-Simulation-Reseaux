@@ -38,14 +38,14 @@ typedef enum {
 
 typedef struct {
     mac_addr_t RootID;
-    int cout;
+    size_t cout;
     mac_addr_t mac;
 } BPDU;
 
 
 typedef struct {
-    uint8_t num;
-    int indexEquipement;
+    size_t num;
+    size_t indexEquipement;
     EtatPort etat;
     BPDU bpdu;
 } Port;
@@ -56,16 +56,16 @@ typedef struct {
 } Station;
 
 typedef struct{
-    uint8_t port;
+    size_t port;
     mac_addr_t adresse_mac;
 }Commutation;
 
 typedef struct{
-    uint8_t nb_port;
+    size_t nb_port;
     Port *ports;
-    uint16_t priorite;
-    uint16_t commu_capacite;
-    uint16_t nb_commu; 
+    size_t priorite;
+    size_t commu_capacite;
+    size_t nb_commu; 
     Commutation* tableCommu;
     BPDU meilleur_bpdu;
 }Switch;
@@ -76,7 +76,7 @@ typedef enum {
 } EquipementType;
 
 typedef struct {
-    int index;
+    size_t index;
     EquipementType type;
     mac_addr_t mac;
     union {
@@ -86,23 +86,23 @@ typedef struct {
 } Equipement;
 
 typedef struct {
-    int nb_equipements;
+    size_t nb_equipements;
     Equipement *equipements;
-    uint8_t *matrice_adjacence;
+    size_t *matrice_adjacence;
 } Graphe;
 
 void construireReseau(char const *path, Graphe *g);
-void construirePort(Graphe *g, int s1, int s2);
+void construirePort(Graphe *g, size_t s1, size_t s2);
 void libererReseau(Graphe *g);
 void ajouterEquipement(char *ligne, Graphe *g ,int const index);
-void ajouterCommutation(Switch *sw,  mac_addr_t const *mac, uint8_t indexPort);
+void ajouterCommutation(Switch *sw,  mac_addr_t const *mac, size_t indexPort);
 void afficherPortSwitch(Switch const *sw);
 void afficherTableCommutation(Switch const *sw);
-void afficherEquipement(Equipement const *e,int const index);
+void afficherEquipement(Equipement const *e, size_t const index);
 void afficherGraphe(Graphe const *g);
 void afficherMatriceAdja(Graphe const *g);
-int  adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac);
-uint8_t numPortIndexEquipment(Switch const *sw, int index);
-int indexEquipmentNumPort(Switch const *sw, uint8_t numPort);
-void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant);
-void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest);
+size_t adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac);
+size_t numPortIndexEquipment(Switch const *sw, size_t index);
+size_t indexEquipmentNumPort(Switch const *sw, size_t numPort);
+void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, size_t PTL);
+void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest);

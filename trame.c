@@ -1,9 +1,9 @@
 #include "trame.h"
 
 
-void affiche_octets(const uint8_t *octets, size_t taille) {
+void affiche_octets(const size_t *octets, size_t taille) {
     for (size_t i = 0; i < taille; i++) {
-        printf("%02X ", octets[i]);
+        printf("%02lX ", octets[i]);
     }
     printf("\n");
 }
@@ -26,7 +26,7 @@ void affiche_trame(Trame const *tr){
     printf("Type          : ");
     affiche_octets(tr->type, 2);
 
-    printf("Données (%d octets) : ", tr->tailleData);
+    printf("Données ( %ld octets) : ", tr->tailleData);
     affiche_octets(tr->data, tr->tailleData);
 
     printf("FCS           : ");
@@ -55,13 +55,13 @@ void liberer_trame(Trame *tr){
     free(tr->data);
 }
 
-uint32_t calculer_fcs(const uint8_t *data, size_t taille) {
+uint32_t calculer_fcs(const size_t *data, size_t taille) {
     //Pour l'algorithme jme suis basé sur la page wikipedia eng "Ethernet Frame" 
     uint32_t crc = 0xFFFFFFFF;
     for (size_t i = 0; i < taille; i++) {
-        uint8_t byte = data[i];
+        size_t byte = data[i];
         crc ^= byte;
-        for (int j = 0; j < 8; j++) {
+        for (size_t j = 0; j < 8; j++) {
             if (crc & 1) {
                 crc = (crc >> 1) ^ 0xEDB88320;
             } else {
@@ -82,7 +82,7 @@ int generer_fcs(Trame *tr) {
     size_t taille_entete = sizeof(tr->preambule) + sizeof(tr->sfd) + sizeof(tr->dest) + sizeof(tr->src) + sizeof(tr->type);
 
     // Allocation d'un buffer temporaire pour contenir l'entête et les données.
-    uint8_t *buffer_crc = (uint8_t*)malloc(taille_entete + tr->tailleData);
+    size_t *buffer_crc = (size_t*)malloc(taille_entete + tr->tailleData);
     if (buffer_crc == NULL) {
         fprintf(stderr, "Erreur d'allocation mémoire\n");
         return -1;
@@ -112,10 +112,10 @@ int generer_fcs(Trame *tr) {
     buffer_crc = NULL;
 
     // Insertion du FCS dans la trame.
-    tr->fcs[0] = (uint8_t)(fcs & 0xFF);
-    tr->fcs[1] = (uint8_t)((fcs >> 8) & 0xFF);
-    tr->fcs[2] = (uint8_t)((fcs >> 16) & 0xFF);
-    tr->fcs[3] = (uint8_t)((fcs >> 24) & 0xFF);
+    tr->fcs[0] = (size_t)(fcs & 0xFF);
+    tr->fcs[1] = (size_t)((fcs >> 8) & 0xFF);
+    tr->fcs[2] = (size_t)((fcs >> 16) & 0xFF);
+    tr->fcs[3] = (size_t)((fcs >> 24) & 0xFF);
 
     return 0; // Indique le succès
 }   

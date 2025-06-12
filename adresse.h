@@ -7,12 +7,12 @@
 
 //Adresse MAC
 typedef struct {
-    uint8_t addr[6];
+    size_t addr[6];
 } mac_addr_t;
 
 //Adresse IP
 typedef struct {
-    uint8_t addr[4];
+    size_t addr[4];
 } ip_addr_t;
 
 void affiche_ip(ip_addr_t const *ip);

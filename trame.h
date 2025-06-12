@@ -6,19 +6,19 @@
 
 // Structure de la tram
 typedef struct Trame{
-    uint8_t preambule[7];
-    uint8_t sfd;
+    size_t preambule[7];
+    size_t sfd;
     mac_addr_t dest;
     mac_addr_t src;
-    uint8_t type[2];
-    uint8_t *data;
-    uint8_t fcs[4];
-    uint16_t tailleData;
+    size_t type[2];
+    size_t *data;
+    size_t fcs[4];
+    size_t tailleData;
 }Trame;
 
 void Lire_Message_Trame(Trame const *tr);
 void affiche_trame(Trame const *tr);
 void liberer_trame(Trame *tr);
-uint32_t calculer_fcs(const uint8_t *data, size_t taille);
+uint32_t calculer_fcs(const size_t *data, size_t taille);
 int generer_fcs(Trame *tr);
 
