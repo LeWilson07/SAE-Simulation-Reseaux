@@ -34,7 +34,7 @@ void affiche_trame(Trame const *tr){
 }
 void Lire_Message_Trame(Trame const *tr){
     //permet de lire le message d'une trame
-    printf("Données (Message) : ");
+    printf("La trame envoyé contient le message suivant : ");
     if (tr->data != NULL && tr->tailleData > 0) {
         // Ajout d’un caractère nul pour imprimer en tant que chaîne
         char *message = malloc(tr->tailleData + 1);

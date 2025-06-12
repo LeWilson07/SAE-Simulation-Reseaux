@@ -341,7 +341,7 @@ void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant
     }  
 }
 
-void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest){
+void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest, const char* message){
     if (g->equipements[stationSrc].type != STATION_TYPE){
         printf("L'équipement source n'est pas une sation !\n");
         return;
@@ -366,7 +366,6 @@ void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest){
     t->type[1] = 0x06;
 
     // Données : chaîne de texte transformée en octets
-    const char* message = "J'aime les bateaux";
     t->tailleData = strlen(message);
     t->data = malloc(t->tailleData);
     memcpy(t->data, message, t->tailleData);

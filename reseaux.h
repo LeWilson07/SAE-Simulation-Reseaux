@@ -102,4 +102,4 @@ int  adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac);
 uint8_t numPortIndexEquipment(Switch const *sw, int index);
 int indexEquipmentNumPort(Switch const *sw, uint8_t numPort);
 void transmettreTrame(Graphe *g, Trame const *tr, int indexSrc, int indexCourant);
-void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest);
+void envoyerMessage(Graphe *g, Trame *t, int stationSrc, int stationDest, const char* message);
