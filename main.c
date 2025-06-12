@@ -21,6 +21,7 @@
         t.data = malloc(t.tailleData);
         memcpy(t.data, message, t.tailleData);
 
+
         Lire_Message_Trame(&t);
         envoyerMessage(&g,&t,7,14);
         envoyerMessage(&g,&t,14,7);

@@ -279,6 +279,8 @@ void afficherMatriceAdja(Graphe const *g){
     }
 }
 
+
+
 size_t adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac){
     //Retourne l'index si elle existe sinon (size_t)-1
     for (size_t i = 0; i < sw->nb_commu; i++) {
@@ -343,39 +345,34 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
 }
 
 void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest){
-    if (g->equipements[stationSrc].type != STATION_TYPE){
-        printf("L'équipement source n'est pas une sation !\n");
+    if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
+        printf("La station n'existe pas\n");
         return;
     }
-    
-    if (stationSrc >= g->nb_equipements || stationDest >= g->nb_equipements) {
-        printf("La station n'existe pas");
+
+    if (g->equipements[stationSrc].type != STATION_TYPE){
+        printf("L'équipement source n'est pas une station !\n");
         return;
     }
 
     t->src = g->equipements[stationSrc].mac;
     t->dest = g->equipements[stationDest].mac;
 
-    // Remplir le préambule avec une valeur fixe
     for (size_t i = 0; i < 7; i++) {
         t->preambule[i] = 0xAA;
     }
     t->sfd = 0xAB;
 
-    // Type arbitraire (ARP)
     t->type[0] = 0x08;
     t->type[1] = 0x06;
 
-    // Données : chaîne de texte transformée en octets
-    const char* message = "J'aime les bateaux";
-    t->tailleData = strlen(message);
-    t->data = malloc(t->tailleData);
-    memcpy(t->data, message, t->tailleData);
-
-    // FCS arbitraire
     t->fcs[0] = 0xDE;
     t->fcs[1] = 0xAD;
     t->fcs[2] = 0xBE;
+    t->fcs[3] = 0xEF;
+
+    int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
+    transmettreTrame(g, t, stationSrc, indexEquipPort);
     t->fcs[3] = 0xEF; 
     
     //Transmission de la trame
@@ -390,6 +387,20 @@ void transmettreBPDU(Graphe *g, size_t indexSrc, size_t indexDest, BPDU bpdu){
         e->sw.ports[num-1].bpdu = bpdu;
     }
 }
+
+int comparer_BPDU(BPDU bpdu1, BPDU bpdu2)
+{
+    int cmp = comparer_mac(&bpdu1.RootID, &bpdu2.RootID);
+    if (cmp != 0){
+        return cmp;
+    } 
+
+    if (bpdu1.cout != bpdu2.cout){
+        return (bpdu1.cout < bpdu2.cout) ? -1 : 1;
+    }
+    return comparer_mac(&bpdu1.mac, &bpdu2.mac);
+}
+
 
 /**/
 char comparerBPDU(BPDU const bpdu1, BPDU const bpdu2){
