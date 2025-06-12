@@ -184,11 +184,11 @@ void afficherPortSwitch(Switch const *sw){
     {
         //if(sw->ports[i].indexEquipement > 9 || sw->ports[i].indexEquipement < 0)
         if(sw->ports[i].indexEquipement > 9){
-            printf("\e[32m│\e[0m  \e[34mPort\e[0m :  %ld → Machine :  %ld            \e[32m│\e[0m\n", sw->ports[i].num, 
+            printf("\e[32m│\e[0m  \e[34mPort\e[0m : %ld → Machine : %ld            \e[32m│\e[0m\n", sw->ports[i].num, 
             sw->ports[i].indexEquipement);
         }
         else{
-            printf("\e[32m│\e[0m  \e[34mPort\e[0m :  %ld → Machine :  %ld             \e[32m│\e[0m\n", sw->ports[i].num, 
+            printf("\e[32m│\e[0m  \e[34mPort\e[0m : %ld → Machine : %ld             \e[32m│\e[0m\n", sw->ports[i].num, 
             sw->ports[i].indexEquipement);
         }
         
@@ -200,13 +200,13 @@ void afficherPortSwitch(Switch const *sw){
 void afficherTableCommutation(Switch const *sw) {
     // S'occupe de l'affichage d'une table de commutation
     printf("\e[32m├─────────────────────────────────────┤\e[0m\n");
-    printf("\e[32m│\e[0m  \e[35mTable de commutation ( %ld entrées)\e[0m   \e[32m│\e[0m\n", sw->nb_commu);
+    printf("\e[32m│\e[0m  \e[35mTable de commutation (%ld entrées)\e[0m   \e[32m│\e[0m\n", sw->nb_commu);
     printf("\e[32m├─────────────────────────────────────┤\e[0m\n");
 
     for (size_t i = 0; i < sw->nb_commu; i++) {
         printf("\e[32m│\e[0m  \e[93mMAC\e[0m : ");
         affiche_mac(&sw->tableCommu[i].adresse_mac);
-        printf(" → Port :  %ld \e[32m│\e[0m\n", sw->tableCommu[i].port);
+        printf(" → Port : %ld \e[32m│\e[0m\n", sw->tableCommu[i].port);
     }
     printf("\e[32m│                                     │\e[0m\n");
 
@@ -215,7 +215,7 @@ void afficherTableCommutation(Switch const *sw) {
 void afficherEquipement(Equipement const *e, size_t const index) {
     //S'occupe de l'affichage d'un équipement
     printf("\e[32m┌─────────────────────────────────────┐\e[0m\n");
-    printf("\e[32m│\e[0m    \e[35mÉquipement  %ld :\e[0m ", index);
+    printf("\e[32m│\e[0m    \e[35mÉquipement %ld :\e[0m ", index);
     switch (e->type)
     {
     case STATION_TYPE:
@@ -241,8 +241,8 @@ void afficherEquipement(Equipement const *e, size_t const index) {
         printf("\e[32m│\e[0m  \e[93mMAC\e[0m : ");
         affiche_mac(&e->mac);
         printf("            \e[32m│\e[0m");
-        printf("\n\e[32m│\e[0m  \e[94mNombre de ports\e[0m :  %ld                \e[32m│\e[0m\n", e->sw.nb_port);
-        printf("\e[32m│\e[0m  \e[95mPriorité\e[0m :  %ld                    \e[32m│\e[0m\n", e->sw.priorite);
+        printf("\n\e[32m│\e[0m  \e[94mNombre de ports\e[0m : %ld                \e[32m│\e[0m\n", e->sw.nb_port);
+        printf("\e[32m│\e[0m  \e[95mPriorité\e[0m : %ld                    \e[32m│\e[0m\n", e->sw.priorite);
         printf("\e[32m│\e[0m                                     \e[32m│\e[0m\n");
         afficherTableCommutation(&e->sw);
         afficherPortSwitch(&e->sw);

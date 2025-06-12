@@ -2,11 +2,11 @@
 
 void affiche_ip(const ip_addr_t *ip)
 {
-    printf(" %ld",ip->addr[0]);
+    printf("%ld",ip->addr[0]);
     for (size_t i = 1; i < 4; i++)
     {
         printf(".");
-        printf(" %ld",ip->addr[i]);
+        printf("%ld",ip->addr[i]);
     }
 }
 
