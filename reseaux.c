@@ -305,8 +305,11 @@ size_t indexEquipmentNumPort(Switch const *sw, size_t numPort){
     return (size_t)-1;
 }
 
-void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, size_t PTL){ //PTL Profondeur to live
-    // Vérifier 
+void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, int PTL){ //PTL Profondeur to live
+    // Vérifier le PTL
+    if(PTL < 0){
+        return;
+    }
     Equipement* e = &g->equipements[indexCourant];
     // Vérifier si l'adresse MAC Courant est celle de destination
     if (comparer_mac(&e->mac,&tr->dest) == 0) {

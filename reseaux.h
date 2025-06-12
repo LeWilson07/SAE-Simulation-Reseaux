@@ -104,5 +104,5 @@ void afficherMatriceAdja(Graphe const *g);
 size_t adresseDansTabCommu(Switch const *sw, mac_addr_t const *mac);
 size_t numPortIndexEquipment(Switch const *sw, size_t index);
 size_t indexEquipmentNumPort(Switch const *sw, size_t numPort);
-void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, size_t PTL);
+void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, int PTL);
 void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest, const char* message);
