@@ -370,10 +370,6 @@ void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest){
     t->fcs[1] = 0xAD;
     t->fcs[2] = 0xBE;
     t->fcs[3] = 0xEF;
-
-    int indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
-    transmettreTrame(g, t, stationSrc, indexEquipPort);
-    t->fcs[3] = 0xEF; 
     
     //Transmission de la trame
     size_t indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
