@@ -69,13 +69,22 @@ int main() {
                 // envoyer une trame
                 size_t stationSrc = 0;
                 size_t stationDest = 0;
-                char *message = "";
+                char message[256];  // ou une taille suffisante selon tes besoins
+
                 printf("De quelle machine souhaitez vous envoyer un message ? (0 à %ld) : ", g.nb_equipements - 1);
                 CHKSSCANF(scanf("%ld", &stationSrc),1,"Erreur de lecture");
                 printf("A quelle machine souhaitez vous envoyer votre message ? (0 à %ld) : ", g.nb_equipements - 1);
                 CHKSSCANF(scanf("%ld", &stationDest),1,"Erreur de lecture");
                 printf("Quel message souhaitez vous envoyer ?");
-                CHKSSCANF(scanf("%s", message),1,"Erreur de lecture");
+                getchar(); // mange le \n restant dans le buffer
+
+                if (fgets(message, sizeof(message), stdin) == NULL) {
+                    printf("Erreur de lecture du message.\n");
+                    break;  // ou return / continue selon ton code
+                }
+
+                // Enlève le \n final s’il est là
+                message[strcspn(message, "\n")] = 0;
                 envoyerMessage(&g, &t, stationSrc, stationDest, message);
                 Lire_Message_Trame(&t);
                 //liberer_trame(&t);
