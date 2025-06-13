@@ -35,7 +35,8 @@ int main() {
         printf("1 --> Afficher tous les éléments du réseau\n");
         printf("2 --> Afficher les informations d'un équipement en particulier\n");
         printf("3 --> Envoyer une trame\n");
-        printf("4 --> Activer STP\n");
+        printf("4 --> Activer STP Dijkstra\n");
+        printf("5 --> Activer STP GodMod (En dev)");
         printf("======================================\n");
         printf("Quelle action souhaitez-vous réaliser ? ");
         CHKSSCANF(scanf("%d", &action),1,"Erreur de lecture");
@@ -84,7 +85,11 @@ int main() {
                 break;
             case 4:
                 setupSTPBis(&g);
-                printf("STP est actif !");
+                printf("STP Dijkstra est actif !");
+                break;
+            case 5:
+                setupSTP(&g);
+                printf("STP GodMod est actif !");
                 break;
             default:
                 printf("Action inconnue. Veuillez choisir une option valide.\n");

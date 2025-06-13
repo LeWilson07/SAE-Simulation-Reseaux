@@ -445,10 +445,29 @@ bool sont_connectes(Graphe *g, size_t s1, size_t s2)
     return res;
 }
 
+int comparer_switch(const Switch *s1, const Switch *s2) {
+    // Comparer la priorité
+    if (s1->priorite < s2->priorite)
+        return -1;
+    if (s1->priorite > s2->priorite)
+        return 1;
+
+    // Si priorité égale, comparer les adresses MAC (plus petite gagne)
+    return comparer_mac(&s1->meilleur_bpdu.mac, &s2->meilleur_bpdu.mac);
+}
+
 void setupSTPBis(Graphe *g){
-    size_t idRoot = 0;
-    //On part du principe que le premier switch est la racine car bato
     size_t n = g->nb_equipements;
+    size_t idRoot = 0;
+    //On détermine la racine logique
+    for (size_t i = 1; i < n; i++) {
+        if (g->equipements[i].type == SWITCH_TYPE) {
+            if (comparer_switch(&g->equipements[i].sw,&g->equipements[idRoot].sw) == -1) {
+                idRoot = i;
+            }
+        }   
+    }
+    
     if(n <= 0) exit(EXIT_FAILURE);
 
     // Initialisation des distances (+ infini)
