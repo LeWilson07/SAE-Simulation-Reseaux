@@ -36,7 +36,7 @@ int main() {
         printf("2 --> Afficher les informations d'un équipement en particulier\n");
         printf("3 --> Envoyer une trame\n");
         printf("4 --> Activer STP Dijkstra\n");
-        printf("5 --> Activer STP GodMod (En dev)");
+        printf("5 --> Activer STP GodMod (En dev)\n");
         printf("======================================\n");
         printf("Quelle action souhaitez-vous réaliser ? ");
         CHKSSCANF(scanf("%d", &action),1,"Erreur de lecture");
@@ -77,8 +77,17 @@ int main() {
                 CHKSSCANF(scanf("%ld", &stationSrc),1,"Erreur de lecture");
                 printf("A quelle machine souhaitez vous envoyer votre message ? (0 à %ld) : ", g.nb_equipements - 1);
                 CHKSSCANF(scanf("%ld", &stationDest),1,"Erreur de lecture");
-                printf("Quel message souhaitez vous envoyer ? ");
-                CHKSSCANF(scanf("%255s", message),1,"Erreur de lecture");
+                printf("Quel message souhaitez vous envoyer ?\n");
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF);
+                printf("Entrez votre message : ");
+                if (fgets(message, sizeof(message), stdin) != NULL) {
+                    // retirer le \n final éventuel
+                    size_t len = strlen(message);
+                    if (len > 0 && message[len - 1] == '\n') {
+                        message[len - 1] = '\0';
+                    }
+                }
                 envoyerMessage(&g, &t, stationSrc, stationDest, message);
                 Lire_Message_Trame(&t);
                 //liberer_trame(&t);
