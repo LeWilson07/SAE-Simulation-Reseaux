@@ -7,7 +7,7 @@ int main() {
     
     Graphe g;
     construireReseau("mylan.lan",&g);
-    setupSTPBis(&g);
+    
     //mac_addr_t mac1 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x01}}, mac2 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x02}};
     //printf("Affiche (size_t)-1 :  %ld", comparer_mac(&mac1,&mac2));
     //printf("Affiche  0 :  %ld", comparer_mac(&mac2,&mac2));
@@ -35,6 +35,7 @@ int main() {
         printf("1 --> Afficher tous les éléments du réseau\n");
         printf("2 --> Afficher les informations d'un équipement en particulier\n");
         printf("3 --> Envoyer une trame\n");
+        printf("4 --> Activer STP\n");
         printf("======================================\n");
         printf("Quelle action souhaitez-vous réaliser ? ");
         CHKSSCANF(scanf("%d", &action),1,"Erreur de lecture");
@@ -81,7 +82,10 @@ int main() {
                 Lire_Message_Trame(&t);
                 //liberer_trame(&t);
                 break;
-
+            case 4:
+                setupSTPBis(&g);
+                printf("STP est actif !");
+                break;
             default:
                 printf("Action inconnue. Veuillez choisir une option valide.\n");
                 break;
