@@ -24,7 +24,14 @@
     }\
 } while(0)
 
-#define CHKSSCANF(op,nbVal,desc) do { \
+#define CHKSSCANF(op,nbVal,desc,ligne) do { \
+    if ((op) != nbVal) { \
+        printf("Erreur ligne %d : %s\n",ligne,desc); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+#define CHKSCANF(op,nbVal,desc) do { \
     if ((op) != nbVal) { \
         printf("%s\n",desc); \
         exit(EXIT_FAILURE); \
@@ -95,7 +102,7 @@ typedef struct {
 void construireReseau(char const *path, Graphe *g);
 void construirePort(Graphe *g, size_t s1, size_t s2);
 void libererReseau(Graphe *g);
-void ajouterEquipement(char *ligne, Graphe *g ,int const index);
+void ajouterEquipement(char *ligne, Graphe *g ,int const index, int ligneErr);
 void ajouterCommutation(Switch *sw,  mac_addr_t const *mac, size_t indexPort);
 void afficherPortSwitch(Switch const *sw);
 void afficherTableCommutation(Switch const *sw);

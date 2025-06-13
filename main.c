@@ -39,7 +39,7 @@ int main() {
         printf("5 --> Activer STP GodMod (En dev)\n");
         printf("======================================\n");
         printf("Quelle action souhaitez-vous réaliser ? ");
-        CHKSSCANF(scanf("%d", &action),1,"Erreur de lecture");
+        CHKSCANF(scanf("%d", &action),1,"Erreur de lecture");
 
         switch (action) {
             case 0:
@@ -59,7 +59,7 @@ int main() {
                 // Afficher les informations d’un équipement en particulier
                 size_t index = -1;
                 printf("Entrez l'index de l'équipement à afficher (0 à %ld) : ", g.nb_equipements - 1);
-                CHKSSCANF(scanf("%ld", &index),1,"Erreur de lecture");
+                CHKSCANF(scanf("%ld", &index),1,"Erreur de lecture");
                 if (index < g.nb_equipements) {
                     afficherEquipement(&g.equipements[index], index);
                 } else {
@@ -74,9 +74,9 @@ int main() {
                 char message[256];  // ou une taille suffisante selon tes besoins
 
                 printf("De quelle machine souhaitez vous envoyer un message ? (0 à %ld) : ", g.nb_equipements - 1);
-                CHKSSCANF(scanf("%ld", &stationSrc),1,"Erreur de lecture");
+                CHKSCANF(scanf("%ld", &stationSrc),1,"Erreur de lecture");
                 printf("A quelle machine souhaitez vous envoyer votre message ? (0 à %ld) : ", g.nb_equipements - 1);
-                CHKSSCANF(scanf("%ld", &stationDest),1,"Erreur de lecture");
+                CHKSCANF(scanf("%ld", &stationDest),1,"Erreur de lecture");
                 printf("Quel message souhaitez vous envoyer ?\n");
                 int c;
                 while ((c = getchar()) != '\n' && c != EOF);

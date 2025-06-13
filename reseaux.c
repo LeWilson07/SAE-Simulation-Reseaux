@@ -1,6 +1,7 @@
 #include "reseaux.h"
 
 void construireReseau(char const *path, Graphe *g) {
+    int ligne = 1;
     size_t nbEquipement;
     size_t nbLiens;
     char bufferLigne[256];
@@ -9,20 +10,22 @@ void construireReseau(char const *path, Graphe *g) {
     CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture de la première ligne
     //Affectaion du nombre d'équipement et de lien
     CHKSSCANF(sscanf(bufferLigne, "%ld %ld", &nbEquipement, &nbLiens), 2, \
-        "Erreur : Nb de Equipement ou Nb de Lien\n");
+        "Nb de Equipement ou Nb de Lien",ligne);
     //Vérification de la cohérence des valeurs
     if(nbEquipement <= 0 || nbLiens <= 0) {
         printf("Erreur : Le nombre d'équipements et liens "
             "ne peut pas être négatif ou nul\n");
         exit(EXIT_FAILURE);
     }
+    ligne++;
     //Enregistrement des stations
     g->nb_equipements = nbEquipement;
     CHKNULL(g->equipements = calloc(nbEquipement, sizeof(Equipement)));
     for (size_t i = 0; i < nbEquipement; i++)
     {
         CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
-        ajouterEquipement(bufferLigne,g,i);
+        ajouterEquipement(bufferLigne,g,i,ligne);
+        ligne++;
     }
     //Création de la matrice d'ajacence
     CHKNULL(g->matrice_adjacence = malloc(nbEquipement*nbEquipement * sizeof(size_t)));
@@ -36,9 +39,9 @@ void construireReseau(char const *path, Graphe *g) {
         size_t s1, s2, poids;
         CHKNULL(fgets(bufferLigne, sizeof(bufferLigne), f)); //Lecture d'une ligne
         CHKSSCANF(sscanf(bufferLigne," %ld; %ld; %ld", &s1, &s2, &poids),3,
-            "Erreur de lecture du lien"); //Lecture des valeurs
+            "Erreur de lecture du lien", ligne); //Lecture des valeurs
         if (s1 >= nbEquipement || s2 >= nbEquipement){
-            printf("Ce lien possède un index supérieur au nombre de machine du réseau");
+            printf("Ce lien possède un index supérieur au nombre de machine du réseau\n");
             exit(EXIT_FAILURE);
         }
         // MAJ de la matrice d'adjacence dans le deux sens
@@ -47,6 +50,7 @@ void construireReseau(char const *path, Graphe *g) {
         // MAJ des ports des equipement concernés
         construirePort(g,s1,s2);
         construirePort(g,s2,s1);
+        ligne++;
     }
         
     CHK0(fclose(f)); //Fermeture du fichier
@@ -99,14 +103,14 @@ void libererReseau(Graphe *g){
     g->matrice_adjacence = NULL;
 }
 
-void ajouterEquipement(char *ligne, Graphe *g ,int const index){
+void ajouterEquipement(char *ligne, Graphe *g ,int const index, int ligneErr){
     Equipement e = {0};
     size_t offset;
 
     //Parse du Type d'équipement
     size_t type;
     CHKSSCANF(sscanf(ligne, " %ld;%ln", &type, &offset),1,
-        "Erreur : Scan du type d'équipement");
+        "Scan du type d'équipement",ligneErr);
     char *rest = ligne + offset;
     e.type = type - 1; //Correspond au type de l'enum
 
@@ -114,7 +118,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     CHKSSCANF(sscanf(rest, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx;%ln",
         &e.mac.addr[0], &e.mac.addr[1], &e.mac.addr[2], &e.mac.addr[3],
         &e.mac.addr[4], &e.mac.addr[5], &offset),
-        6, "Erreur de lecture de l'adresse MAC\n");
+        6, "Erreur de lecture de l'adresse MAC",ligneErr);
     rest = rest + offset;
 
     //Parse des autres attributs en fonction du type
@@ -126,7 +130,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
         CHKSSCANF(sscanf(rest, "%hhu.%hhu.%hhu.%hhu",
             &e.station.ip.addr[0], &e.station.ip.addr[1],
             &e.station.ip.addr[2], &e.station.ip.addr[3]),
-            4, "Erreur de lecture de l'adresse IP\n");
+            4, "Erreur de lecture de l'adresse IP",ligneErr);
         //Mise en place du port
         e.station.port.indexEquipement = (size_t)-1;
         break;
@@ -134,11 +138,11 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     case SWITCH_TYPE:
         //Parse du nombre de port
         CHKSSCANF(sscanf(rest,"%zu;%ln",&e.sw.nb_port, &offset),1,
-        "Erreur dans la lecture du nombre de port\n");
+        "Erreur dans la lecture du nombre de port",ligneErr);
         rest = rest + offset;
         //Parse priorité
         CHKSSCANF(sscanf(rest,"%zu",&e.sw.priorite),1,
-        "Erreur dans la lecture du nombre de la priorité\n");
+        "Erreur dans la lecture du nombre de la priorité",ligneErr);
         //Allocation de la table de commutation
         e.sw.nb_commu = 0;
         e.sw.commu_capacite = NOMBRE_COMMUTATION_DEFAUT; //Valeur par défaut
