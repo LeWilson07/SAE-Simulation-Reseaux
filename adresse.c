@@ -2,28 +2,28 @@
 
 void affiche_ip(const ip_addr_t *ip)
 {
-    printf("%ld",ip->addr[0]);
+    printf("%d",ip->addr[0]);
     for (size_t i = 1; i < 4; i++)
     {
         printf(".");
-        printf("%ld",ip->addr[i]);
+        printf("%d",ip->addr[i]);
     }
 }
 
 void affiche_mac(const mac_addr_t *mac)
 {
-    printf("%02lX",mac->addr[0]);
+    printf("%02X",mac->addr[0]);
     for (size_t i = 1; i < 6; i++)
     {
         printf(":");
-        printf("%02lX",mac->addr[i]);
+        printf("%02X",mac->addr[i]);
     }
 }
 
 char comparer_mac(const mac_addr_t *mac1, const mac_addr_t *mac2){
     //La fonction retourne 0 si les adresses MAC sont similaires
     //1 Si la mac1 est après mac2 et (size_t)-1 si l'inverse
-    size_t cmp = memcmp(mac1->addr, mac2->addr, 6);
+    int cmp = memcmp(mac1->addr, mac2->addr, 6);
     if (cmp == 0) return 0;
-    return (cmp > 0) ? 1 : (size_t)-1;
+    return (cmp > 0) ? 1 : -1;
 }

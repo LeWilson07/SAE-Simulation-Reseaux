@@ -6,7 +6,7 @@
 int main() {
     
     Graphe g;
-    construireReseau("mylan.lan",&g);
+    construireReseau("mylan_no_cycle.lan",&g);
     setupSTPBis(&g);
     //mac_addr_t mac1 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x01}}, mac2 = {{0x01, 0x45, 0x23, 0xA6, 0xF7, 0x02}};
     //printf("Affiche (size_t)-1 :  %ld", comparer_mac(&mac1,&mac2));
@@ -67,8 +67,8 @@ int main() {
             }
             case 3:
                 // envoyer une trame
-                size_t stationSrc = 0;
-                size_t stationDest = 0;
+                size_t stationSrc;
+                size_t stationDest;
                 char message[256];  // ou une taille suffisante selon tes besoins
 
                 printf("De quelle machine souhaitez vous envoyer un message ? (0 à %ld) : ", g.nb_equipements - 1);

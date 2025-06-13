@@ -111,7 +111,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     e.type = type - 1; //Correspond au type de l'enum
 
     //Parse de l'adresse MAC de l'équipement
-    CHKSSCANF(sscanf(rest, "%lx:%lx:%lx:%lx:%lx:%lx;%ln",
+    CHKSSCANF(sscanf(rest, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx;%ln",
         &e.mac.addr[0], &e.mac.addr[1], &e.mac.addr[2], &e.mac.addr[3],
         &e.mac.addr[4], &e.mac.addr[5], &offset),
         6, "Erreur de lecture de l'adresse MAC\n");
@@ -123,7 +123,7 @@ void ajouterEquipement(char *ligne, Graphe *g ,int const index){
     case STATION_TYPE:
         //Parse de l'ip
         //ip_addr_t *ip = e.station.ip;
-        CHKSSCANF(sscanf(rest, "%zu.%zu.%zu.%zu",
+        CHKSSCANF(sscanf(rest, "%hhu.%hhu.%hhu.%hhu",
             &e.station.ip.addr[0], &e.station.ip.addr[1],
             &e.station.ip.addr[2], &e.station.ip.addr[3]),
             4, "Erreur de lecture de l'adresse IP\n");
@@ -308,17 +308,12 @@ size_t indexEquipmentNumPort(Switch const *sw, size_t numPort){
 }
 
 void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, int PTL){ //PTL Profondeur to live
+    //printf("%ld\n", indexCourant);
     // Vérifier le PTL
     if(PTL < 0){
         return;
     }
     Equipement* e = &g->equipements[indexCourant];
-    if (e->type == SWITCH_TYPE){
-        printf("Switch : %ld\n",e->index);
-    }
-    else{
-        printf("Station : %ld\n",e->index);
-    }
     // Vérifier si l'adresse MAC Courant est celle de destination
     if (comparer_mac(&e->mac,&tr->dest) == 0) {
         printf("\033[1;31mLa trame est arrivé à destination\033[0m\n") ;
@@ -327,7 +322,7 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
     // On se prépare à transmettre (Si c'est un switch)
     if (e->type == SWITCH_TYPE)
     {
-        printf("Switch : %ld\n",e->index);
+        //printf("Switch : %ld\n",e->index);
         //On récupère le port d'arriver
         size_t num = numPortIndexEquipment(&e->sw,indexSrc);
         //On sauvegarde l'adresse MAC source si elle n'est pas connue dans la table de commutation
@@ -391,6 +386,7 @@ void envoyerMessage(Graphe *g, Trame *t, size_t stationSrc, size_t stationDest, 
     t->fcs[2] = 0xBE;
     t->fcs[3] = 0xEF;
     
+
     //Transmission de la trame
     size_t indexEquipPort = g->equipements[stationSrc].station.port.indexEquipement;
     transmettreTrame(g,t,stationSrc,indexEquipPort,g->nb_equipements);
