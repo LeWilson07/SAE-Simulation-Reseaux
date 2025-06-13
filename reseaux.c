@@ -308,7 +308,7 @@ size_t indexEquipmentNumPort(Switch const *sw, size_t numPort){
 }
 
 void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexCourant, int PTL){ //PTL Profondeur to live
-    //printf("%ld\n", indexCourant);
+    //printf("%ld\n",indexCourant);
     // Vérifier le PTL
     if(PTL < 0){
         return;
@@ -325,6 +325,9 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
         //printf("Switch : %ld\n",e->index);
         //On récupère le port d'arriver
         size_t num = numPortIndexEquipment(&e->sw,indexSrc);
+        //On vérifie si le port d'arriver est bloquer
+        if (e->sw.ports[num-1].role == BLOQUE) return;
+        
         //On sauvegarde l'adresse MAC source si elle n'est pas connue dans la table de commutation
         if (adresseDansTabCommu(&e->sw,&tr->src) == (size_t)-1) {
             //On ajout l'adresse dans la table de commu
@@ -342,10 +345,12 @@ void transmettreTrame(Graphe *g, Trame const *tr, size_t indexSrc, size_t indexC
 
             for (size_t i = 0; i < e->sw.nb_port; i++)
             {
-                size_t indexEqTransmission = e->sw.ports[i].indexEquipement;
-                if (indexEqTransmission != (size_t)-1 && indexEqTransmission != indexSrc) {
-                    transmettreTrame(g,tr,e->index,indexEqTransmission, PTL--);
-                }   
+                if (e->sw.ports[i].role != BLOQUE) {
+                    size_t indexEqTransmission = e->sw.ports[i].indexEquipement;
+                    if (indexEqTransmission != (size_t)-1 && indexEqTransmission != indexSrc) {
+                        transmettreTrame(g,tr,e->index,indexEqTransmission, PTL--);
+                    }   
+                }
             }
         }  
     }  
