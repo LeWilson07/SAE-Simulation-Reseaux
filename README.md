@@ -1,7 +1,3 @@
-Parfait, merci pour les précisions ! Avec ça, je peux te proposer un README clair et structuré. Voici un exemple que tu pourrais utiliser et adapter :
-
----
-
 # Simulateur de Réseau en C
 
 
