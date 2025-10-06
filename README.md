@@ -20,6 +20,9 @@ Ce projet est un simulateur de réseau écrit en C réalisé par une équipe de 
 * Simulation d’algorithmes réseau, comme le STP, pour éviter les boucles.
 * Affichage de l’état du réseau et des transmissions de trames.
 
+## A implémenter
+* Un vrai spanning tree protocol, car pour l'instant on utilise un pseudo STP avec Djisktra
+
 ## Compilation et exécution
 
 Pour compiler le projet :
