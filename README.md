@@ -45,7 +45,11 @@ Pour exécuter le simulateur :
 <img width="469" height="849" alt="image" src="https://github.com/user-attachments/assets/5fb8b5d0-6185-40f3-9fe0-4497742a5d08" />
 
 ### Envoi d'une trame : 
-<img width="891" height="198" alt="image" src="https://github.com/user-attachments/assets/06153c96-ca4b-4f89-a04d-5c8f16b11b36" />
+<img width="800" height="459" alt="image" src="https://github.com/user-attachments/assets/94a030bf-761b-42ff-8334-f2a3d909ebca" />
+
+### Remplissage automatique de la table de commutation (après envoi d'une trame)
+<img width="466" height="673" alt="image" src="https://github.com/user-attachments/assets/527efc9d-15cf-4bca-b816-7b95e900e008" />
+
 
 
 
