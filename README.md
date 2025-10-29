@@ -24,6 +24,16 @@ Ce projet est un simulateur de réseau écrit en C réalisé par une équipe de 
 * Un vrai spanning tree protocol, car pour l'instant on utilise un pseudo STP avec Djisktra
 
 ## Compilation et exécution
+Pour compiler et exécuter le projet, vous devez disposer d’un **compilateur C** sur votre machine, tel que :
+
+- **GCC** (GNU Compiler Collection) — recommandé  
+- ou un équivalent compatible (`clang`, `tcc`, `MinGW` sous Windows, etc.)
+
+Pour vérifier si GCC est installé :
+
+```bash
+gcc --version
+```
 
 Pour compiler le projet :
 
